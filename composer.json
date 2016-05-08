@@ -1,0 +1,5 @@
+{
+  "require": {
+    "nikic/PHP-Parser": ">=2.0"
+  }
+}

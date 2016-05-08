@@ -1,0 +1,37 @@
+(*
+  Buffalo file for lisp
+  http://stackoverflow.com/questions/517113/lisp-grammar-in-yacc
+*)
+tokens {
+  IDENTIFIER is /[a-zA-Z]/;
+  CONSTANT is
+  NIL is "nil";
+}
+
+grammar BNF {
+<exprs> ::= <expr> <exprs>;
+
+<list> ::= "("' <exprs> ")";
+
+<expr> ::=  <atom>
+          | <list>
+        ;
+
+<atom> ::=
+    [IDENTIFIER]
+  | [CONSTANT]
+  | [NIL]
+  | "+"
+  | "-"
+  | "*"
+  | "^"
+  | "/"
+  ;
+}
+
+actions {
+
+}
+stackmatch {
+  ["(", ")"]
+}

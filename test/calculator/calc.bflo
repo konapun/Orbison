@@ -1,0 +1,33 @@
+(*
+  Define tokens, a grammar, and rules for a calculator language
+*)
+
+(*
+  The "STANDARD" token set defines numbers as positive and negative numbers with
+  optional decimals and no exponent support, identifiers as legal JavaScript
+  identifiers, and spaces as spaces in the set \s+
+*)
+tokens STANDARD {
+  numbers      => NUMBER
+  identifier   => ID
+  spaces       => <IGNORE>
+}
+
+grammar BNF {
+  <program> ::= <stmtlist>;
+  <stmtlist> ::= <stmt> <stmtlist> | "";
+  <program> ::= <stmtlist>;
+  <stmtlist> ::= <stmt> <stmtlist> | "";
+  <stmt> ::= [ID] ":=" <expr>;
+  <expr> ::= <term> <termtail>;
+  <termtail> ::= <add op> <term> | "";
+  <term> ::= [ID] | [NUMBER];
+  <add op> ::= "+" | "-";
+}
+
+(*
+  Use PHP to define actions on automaton transitions
+*)
+actions PHP {
+  // TODO
+}

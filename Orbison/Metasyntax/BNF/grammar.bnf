@@ -1,0 +1,12 @@
+<grammar> ::= <production> <production>;
+<production ::= [RULE] "::=" <rules> ";"
+               | ""
+            ;
+<rules> ::= <unit> <rule_cont>;
+<unit> ::= [RULE]
+         | [STRING]
+         | [TOKEN]
+       ;
+<rule_cont> ::= "|" <unit>
+              | ""
+            ;

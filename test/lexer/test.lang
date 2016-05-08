@@ -1,0 +1,11 @@
+;; Testing lexer
+| ;; pipe
+, ;; comma
+[comma] ;; comma
+: ;; colon
+"string" ;; string
+123 ;; number
+.99 ;; number
+true ;; true
+false ;; false
+key ;; key
