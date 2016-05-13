@@ -52,6 +52,18 @@ class PDA {
     $this->state = $start;
   }
 
+  function getStackCount() {
+    return count($this->stack);
+  }
+
+  function pushStack($item) {
+    array_push($this->stack, $item);
+  }
+
+  function popStack() {
+    return array_pop($this->stack);
+  }
+
   /*
    * Get the current state of the PDA
    */
@@ -124,17 +136,27 @@ class PDA {
     $node2 = $this->getOrCreateNode($id2);
 
     $that = $this;
-    $stack = $this->stack;
-    $this->onTransition($id1, function() use ($that, $id2, &$stack) {
-      $symbol = array_pop($stack);
+    $this->onTransition($id1, function() use ($that, $id2) {
+      $symbol = $that->popStack();
       if ($symbol != $id2) {
         $that->addTransition($that->getState(), self::FAIL, self::FAIL);
         $that->transition(self::FAIL);
       }
     });
-    $this->onTransition($id2, function() use ($id2, &$stack) {
-      array_push($stack, $id2);
+    $this->onTransition($id2, function() use ($that, $id2) {
+      $that->pushStack($id2);
     });
+  }
+
+  /*
+   * Require that the stack be empty at a given point in time and transition to
+   * the fail state if it's not
+   */
+  function requireEmptyStack() {
+    if (!empty($this->stack)) {
+      $this->addTransition($this->getState(), self::FAIL, self::FAIL);
+      $this->transition(self::FAIL);
+    }
   }
 
   function reset() {

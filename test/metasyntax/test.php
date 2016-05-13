@@ -6,9 +6,9 @@ use Orbison\Metasyntax\BNF\BNFParser as BNFParser;
 
 $bnfMetasyntax = <<<EOS
 (* comment *)
-<rule> ::= "string" <rule2>
-          | "end";
-<rule2> ::= "," <rule>;
+<program> ::= "start" ("more") "end" <done>;
+<done> ::= "diggy" <rule2>
+          | [END];
 EOS;
 
 $lexer = new BNFLexer();

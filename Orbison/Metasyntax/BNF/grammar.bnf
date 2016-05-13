@@ -1,12 +1,25 @@
-<grammar> ::= <production> <production>;
-<production ::= [RULE] "::=" <rules> ";"
-               | ""
-            ;
-<rules> ::= <unit> <rule_cont>;
-<unit> ::= [RULE]
-         | [STRING]
-         | [TOKEN]
-       ;
-<rule_cont> ::= "|" <unit>
-              | ""
-            ;
+(*
+Standard:
+  syntax     ::=  { rule }
+  rule       ::=  identifier  "::="  expression
+  expression ::=  term { "|" term }
+  term       ::=  factor { factor }
+  factor     ::=  identifier |
+                  quoted_symbol |
+                  "("  expression  ")" |
+                  "["  expression  "]" |
+                  "{"  expression  "}"
+  identifier ::=  letter { letter | digit }
+  quoted_symbol ::= """ { any_character } """
+*)
+
+(* Modified *)
+<grammar>    ::= { <production> };
+<production  ::= [IDENTIFIER] "::=" <expression> ";";
+<expression> ::= <term>  { "|" term };
+<term>       ::= <factor> { <factor> };
+<factor>     ::= [IDENTIFIER]
+               | [STRING]
+               | [TOKEN]
+               | "{" <expression> "}"
+             ;

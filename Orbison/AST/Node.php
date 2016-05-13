@@ -8,26 +8,25 @@ use Orbison\Exception\TreeException as TreeException;
  * root of the subtree rooted at itself
  */
 class Node {
-  private $data;
+  private $attributes;
   private $parent;
   private $children;
 
-  function __construct($data) {
-    $this->data = $data;
+  function __construct($attributes=array()) {
+    $this->attributes = $attributes;
     $this->parent = null;
     $this->children = array();
   }
 
-  function addChild($data) {
-    $node = new self($data);
-    return $this->addChildNode($node);
-  }
-
-  function addChildNode($node) {
+  function addChild($node) {
     $node->parent = $this;
     array_push($this->children, $node);
 
     return $node;
+  }
+
+  function setAttribute($key, $val) {
+    $this->attributes[$key] = $val;
   }
 
   function getParent() {
@@ -41,8 +40,20 @@ class Node {
     return $this->children;
   }
 
-  function getData() {
-    return $this->data;
+  function getAttributes() {
+    return $this->attributes;
+  }
+
+  function getAttribute($attr) {
+    if (!$this->hasAttribute($attr)) {
+      // TODO: throw exception
+    }
+
+    return $this->attributes[$attr];
+  }
+
+  function hasAttribute($attr) {
+    return array_key_exists($attr, $this->attributes);
   }
 
   function isRoot() {

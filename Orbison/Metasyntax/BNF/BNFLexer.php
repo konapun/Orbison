@@ -19,6 +19,8 @@ class BNFLexer extends Lexer {
       '/^(;)/'                   => Token::SEMICOLON, // ;
       '/^<([^>]*)>/'             => Token::RULE, // <rule>
       '/^\[([^\]]*)\]/'          => Token::TOKEN, // [token]
+      '/^(\()/'                  => Token::BEGIN_REPEAT, // (
+      '/^(\))/'                  => Token::END_REPEAT, // )
       '/^\{(^}]*)}/'             => Token::ACTION, // { action }
       '/^(\s+)/'                 => Lexer::SKIP // whitespace
     );

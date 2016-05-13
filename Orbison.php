@@ -24,4 +24,9 @@ include_once($parserBase . 'StateNode.php');
 include_once($bnfBase . 'BNFToken.php');
 include_once($bnfBase . 'BNFLexer.php');
 include_once($bnfBase . 'BNFParser.php');
+include_once($bnfBase . 'AST' . DIRECTORY_SEPARATOR . 'Grammar.php');
+include_once($bnfBase . 'AST' . DIRECTORY_SEPARATOR . 'Production.php');
+include_once($bnfBase . 'AST' . DIRECTORY_SEPARATOR . 'Rule.php');
+include_once($bnfBase . 'AST' . DIRECTORY_SEPARATOR . 'String.php');
+include_once($bnfBase . 'AST' . DIRECTORY_SEPARATOR . 'Token.php');
 ?>
