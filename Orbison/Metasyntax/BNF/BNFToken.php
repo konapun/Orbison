@@ -6,7 +6,7 @@ use Orbison\Token as Token;
 class BNFToken extends Token {
   const ASSIGNMENT = 'T_ASSIGNMENT';
   const STRING = 'T_STRING';
-  const RULE = 'T_RULE';
+  const IDENTIFIER = 'T_IDENTIFIER';
   const PIPE = 'T_PIPE';
   const SEMICOLON = 'T_SEMICOLON';
   const TOKEN = 'T_TOKEN';

@@ -17,7 +17,7 @@ class BNFLexer extends Lexer {
       '/^"([^"]*)"/'             => Token::STRING, // "string"
       '/^(\|)/'                  => Token::PIPE, // |
       '/^(;)/'                   => Token::SEMICOLON, // ;
-      '/^<([^>]*)>/'             => Token::RULE, // <rule>
+      '/^<([^>]*)>/'             => Token::IDENTIFIER, // <rule>
       '/^\[([^\]]*)\]/'          => Token::TOKEN, // [token]
       '/^(\()/'                  => Token::BEGIN_REPEAT, // (
       '/^(\))/'                  => Token::END_REPEAT, // )

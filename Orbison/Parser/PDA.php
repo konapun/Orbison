@@ -88,6 +88,9 @@ class PDA {
     return new FluentNode($this, $nodeID);
   }
 
+  /*
+   * When on $node1 and see $edge, move to $node2
+   */
   function addTransition($node1, $edge, $node2) {
     $node1 = $this->getOrCreateNode($node1);
     $node2 = $this->getOrCreateNode($node2);
@@ -159,6 +162,9 @@ class PDA {
     }
   }
 
+  /*
+   * Reset the PDA to its initial state
+   */
   function reset() {
     $this->state = $this->getOrCreateNode(self::START);
     $this->stack = array();

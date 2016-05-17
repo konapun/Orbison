@@ -17,8 +17,8 @@ class BNFParser extends Parser {
   protected function rules($pda, $ast) {
 
     // Define PDA nodes
-    $lhsRule = $pda->createNode(Token::RULE);
-    $rhsRule = $pda->createNode(Token::RULE);
+    $lhsRule = $pda->createNode(Token::IDENTIFIER);
+    $rhsRule = $pda->createNode(Token::IDENTIFIER);
     $assignment = $pda->createNode(Token::ASSIGNMENT);
     $string = $pda->createNode(Token::STRING);
     $pipe = $pda->createNode(Token::PIPE);
@@ -31,7 +31,7 @@ class BNFParser extends Parser {
     // Define transtions
 $test = array(); // test nodes
     $pda->when(PDA::START)->transition(array(
-      Token::RULE  => $lhsRule
+      Token::IDENTIFIER => $lhsRule
     ))->with(function($to, $from) use ($ast, $test) {
       echo "START: Transitioning from $from to $to\n";
       $child = 'grammar';
@@ -51,7 +51,7 @@ $test = array(); // test nodes
     // Define an AST node with left child as the class and the right child as the rule
     $pda->when($assignment)->transition(array(
       Token::STRING       => $string,
-      Token::RULE         => $rhsRule,
+      Token::IDENTIFIER   => $rhsRule,
       Token::TOKEN        => $token,
       Token::BEGIN_REPEAT => $beginRepeat
     ))->with(function($to, $from) use (&$test) {
@@ -63,7 +63,7 @@ $test = array(); // test nodes
     $pda->when($string)->transition(array(
       Token::STRING       => $string,
       Token::SEMICOLON    => $semicolon,
-      Token::RULE         => $rhsRule,
+      Token::IDENTIFIER   => $rhsRule,
       Token::PIPE         => $pipe,
       Token::TOKEN        => $token,
       Token::BEGIN_REPEAT => $beginRepeat,
@@ -86,7 +86,7 @@ $test = array(); // test nodes
 
     $pda->when($pipe)->transition(array(
       Token::STRING       => $string,
-      Token::RULE         => $rhsRule,
+      Token::IDENTIFIER   => $rhsRule,
       Token::TOKEN        => $token,
       Token::BEGIN_REPEAT => $beginRepeat
     ))->with(function($to, $from) {
@@ -96,7 +96,7 @@ $test = array(); // test nodes
     $pda->when($rhsRule)->transition(array(
       Token::STRING       => $string,
       Token::PIPE         => $pipe,
-      Token::RULE         => $rhsRule,
+      Token::IDENTIFIER   => $rhsRule,
       Token::SEMICOLON    => $semicolon,
       Token::TOKEN        => $token,
       Token::BEGIN_REPEAT => $beginRepeat,
@@ -108,7 +108,7 @@ $test = array(); // test nodes
     $pda->when($token)->transition(array(
       Token::STRING     => $string,
       Token::PIPE       => $pipe,
-      Token::RULE       => $rhsRule,
+      Token::IDENTIFIER => $rhsRule,
       Token::SEMICOLON  => $semicolon,
       Token::TOKEN      => $token,
       Token::END_REPEAT => $endRepeat
@@ -121,10 +121,10 @@ $test = array(); // test nodes
     ));
 
     $pda->when($beginRepeat)->transition(array(
-      Token::STRING => $string,
-      Token::PIPE   => $pipe,
-      Token::RULE   => $rhsRule,
-      Token::TOKEN  => $token
+      Token::STRING     => $string,
+      Token::PIPE       => $pipe,
+      Token::IDENTIFIER => $rhsRule,
+      Token::TOKEN      => $token
     ))->with(function($to, $from) {
       echo "8: Transitioned from $from to $to\n";
     });
@@ -132,7 +132,7 @@ $test = array(); // test nodes
     $pda->when($endRepeat)->transition(array(
       Token::STRING       => $string,
       Token::PIPE         => $pipe,
-      Token::RULE         => $rhsRule,
+      Token::IDENTIFIER   => $rhsRule,
       Token::TOKEN        => $token,
       Token::SEMICOLON    => $semicolon,
       Token::BEGIN_REPEAT => $beginRepeat
@@ -141,7 +141,7 @@ $test = array(); // test nodes
     });
 
     $pda->when($semicolon)->transition(array(
-      Token::RULE  => $lhsRule
+      Token::IDENTIFIER => $lhsRule
     ))->terminal()->with(function($to, $from) use ($pda) {
       $pda->requireEmptyStack(); // any END_REPEAT token must occur within the same rule
       echo "4. Transitioned from $from to $to\n";

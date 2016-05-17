@@ -6,7 +6,11 @@ Orbison can integrate into your project in two ways:
   1. Using code generation to create an automaton from a language definition file that can parse the language described by the definition (as source code)
   2. Using Orbison as a library
 
+## Overview
+Orbison isn't a standard shift/reduce parser and instead uses a pushdown automaton (PDA) to define transtions and build the abstract syntax tree (AST). This eliminates the need for a separate tree validation step since all allowed transitions are defined by the PDA (including stack matches).
+
 ## Defining your language
+Orbison itself defines a metasyntax which is a dialect of BNF (see Orbison/Metasyntax/BNF/grammar.bnf) which is defined in terms of PDA transitions directly (see Orbison/Metasyntax/BNF/BNFParser.php). You may define your language in the same way, or you may use BNF to generate the PDA for you.
 
 ### Defining Tokens
 Orbison first converts the source string into a token stream using regular expressions
