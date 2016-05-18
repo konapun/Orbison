@@ -8,6 +8,8 @@ use Orbison\Metasyntax\BNF\AST\Grammar as Grammar;
 use Orbison\Metasyntax\BNF\AST\Production as Production;
 use Orbison\AST\Builder as NodeBuilder;
 
+use Orbison\AST\Node as TestNode; // FIXME
+
 class BNFParser extends Parser {
 
   /*
@@ -16,7 +18,7 @@ class BNFParser extends Parser {
    */
   protected function rules($pda, $ast) {
 
-    // Define PDA nodes
+    /* Define PDA nodes */
     $lhsRule = $pda->createNode(Token::IDENTIFIER);
     $rhsRule = $pda->createNode(Token::IDENTIFIER);
     $assignment = $pda->createNode(Token::ASSIGNMENT);
@@ -28,10 +30,10 @@ class BNFParser extends Parser {
     $beginRepeat = $pda->createNode(Token::BEGIN_REPEAT);
     $endRepeat = $pda->createNode(Token::END_REPEAT);
 
-    // Define transtions
+    /* Define transtions */
     $pda->when(PDA::START)->transition(array(
       Token::IDENTIFIER => $lhsRule
-    ))->with(function($to, $from) use ($ast) {
+    ))->with(function($to, $from) use ($currNode) {
       echo "START: Transitioning from $from to $to\n";
     });
 
@@ -41,7 +43,6 @@ class BNFParser extends Parser {
       echo "1. Transitioned from $from to $to\n";
     });
 
-    // Define an AST node with left child as the class and the right child as the rule
     $pda->when($assignment)->transition(array(
       Token::STRING       => $string,
       Token::IDENTIFIER   => $rhsRule,
@@ -85,12 +86,13 @@ class BNFParser extends Parser {
     });
 
     $pda->when($token)->transition(array(
-      Token::STRING     => $string,
-      Token::PIPE       => $pipe,
-      Token::IDENTIFIER => $rhsRule,
-      Token::SEMICOLON  => $semicolon,
-      Token::TOKEN      => $token,
-      Token::END_REPEAT => $endRepeat
+      Token::STRING       => $string,
+      Token::PIPE         => $pipe,
+      Token::IDENTIFIER   => $rhsRule,
+      Token::SEMICOLON    => $semicolon,
+      Token::TOKEN        => $token,
+      Token::BEGIN_REPEAT => $beginRepeat,
+      Token::END_REPEAT   => $endRepeat
     ))->with(function($to, $from) {
       echo "7: Transitioned from $from to $to\n";
     });
@@ -125,12 +127,14 @@ class BNFParser extends Parser {
       echo "4. Transitioned from $from to $to\n";
     });
 
+    /* Define stack match rules */
     $pda->stackMatch(Token::END_REPEAT, Token::BEGIN_REPEAT);
     $pda->onTransition(array($pipe, $semicolon), function() use ($pda) {
       $pda->requireEmptyStack(); // any END_REPEAT token must occur within the same rule
     });
 
-    $pda->onTransition(function($node) {
+    /* DEBUG */
+    $pda->onTransition(function($node, $prev) {
       echo "-------------Transitioning-------------\n";
       //echo "Transitioning to $node (" . $node->getID() . ")\n";
     });

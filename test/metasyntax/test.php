@@ -5,10 +5,23 @@ use Orbison\Metasyntax\BNF\BNFLexer as BNFLexer;
 use Orbison\Metasyntax\BNF\BNFParser as BNFParser;
 
 $bnfMetasyntax = <<<EOS
-(* comment *)
-<program> ::= "start" ("more") "end" <done>;
-<done> ::= "diggy" <rule2>
-          | [END];
+(* Micro CFG from sample *)
+<program>   ::= "begin" <stat-list> "end";
+<stat-list> ::= <statement>  ( <statement> );
+<statement> ::= [id] ":=" <expr> ";"
+              | "read" "(" <id-list> ")" ";"
+              | "write" "(" <expr-list> ")" ";"
+            ;
+<id-list>   ::= [id] ( "," [id] );
+<expr-list> ::= <expr> ( "," <expr> );
+<expr>      ::= <primary> ( <addop> <primary> );
+<primary>   ::= ( <expr> )
+              | [id]
+              | [intliteral]
+            ;
+<addop>     ::= "+"
+              | "-"
+            ;
 EOS;
 
 $lexer = new BNFLexer();
