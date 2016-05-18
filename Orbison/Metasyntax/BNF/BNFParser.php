@@ -134,8 +134,8 @@ class BNFParser extends Parser {
     });
 
     /* DEBUG */
-    $pda->onTransition(function($node, $prev) {
-      echo "-------------Transitioning-------------\n";
+    $pda->onTransition(function($node, $prev, $token) {
+      echo "------------- Transitioning -------------\n";
       //echo "Transitioning to $node (" . $node->getID() . ")\n";
     });
   }

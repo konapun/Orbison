@@ -1,6 +1,7 @@
 <?php
 namespace Orbison\Parser;
 
+use Orbison\Token as Token;
 use Orbison\Parser\StateNode as Node;
 use Orbison\Exception\StateException as StateException;
 
@@ -178,11 +179,8 @@ class PDA {
    *
    * Use transition events to catch error state.
    */
-  function transition($id) {
-    $node = $id;
-    if (is_object($id)) { // transitioning from a NodeAdapter
-      $id = $node->getID();
-    }
+  function transition(Token $token) {
+    $id = $token->getType();
 
     $prev = $this->state;
     $transitionNode = $this->state->transition($id);
@@ -197,12 +195,12 @@ class PDA {
 
     // Run onTransitionFrom events
     foreach ($this->getEventsFrom($prev->getID(), $id) as $event) {
-      $event($to, $prev);
+      $event($to, $prev, $token);
     }
 
     // Run onTransition events
     foreach (array_merge($this->events[$to], $this->events['__all__']) as $event) {
-      $event($to, $prev);
+      $event($to, $prev, $token);
     }
     return $to;
   }
