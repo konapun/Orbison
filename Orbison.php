@@ -17,16 +17,12 @@ include_once($base . 'Lexer.php');
 include_once($base . 'Parser.php');
 
 include_once($astBase . 'Node.php');
+include_once($astBase . 'Builder.php');
+include_once($astBase . 'Traverser.php');
+include_once($astBase . 'Visitor.php');
 
 include_once($parserBase . 'PDA.php');
 include_once($parserBase . 'StateNode.php');
 
-include_once($bnfBase . 'BNFToken.php');
-include_once($bnfBase . 'BNFLexer.php');
-include_once($bnfBase . 'BNFParser.php');
-// include_once($bnfBase . 'AST' . DIRECTORY_SEPARATOR . 'Grammar.php');
-// include_once($bnfBase . 'AST' . DIRECTORY_SEPARATOR . 'Production.php');
-// include_once($bnfBase . 'AST' . DIRECTORY_SEPARATOR . 'Rule.php');
-// include_once($bnfBase . 'AST' . DIRECTORY_SEPARATOR . 'String.php');
-// include_once($bnfBase . 'AST' . DIRECTORY_SEPARATOR . 'Token.php');
+include_once($bnfBase . 'BNF.php');
 ?>

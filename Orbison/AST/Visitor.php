@@ -4,7 +4,7 @@ namespace Orbison\AST;
 /*
  *
  */
-abstract class NodeVisitor {
+abstract class Visitor {
 
   function enterNode($node) {}
 

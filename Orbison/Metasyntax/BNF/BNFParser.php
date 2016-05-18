@@ -6,7 +6,7 @@ use Orbison\Parser\PDA as PDA;
 use Orbison\Metasyntax\BNF\BNFToken as Token;
 use Orbison\Metasyntax\BNF\AST\Grammar as Grammar;
 use Orbison\Metasyntax\BNF\AST\Production as Production;
-use Orbison\AST\NodeFactory as Factory;
+use Orbison\AST\Builder as NodeBuilder;
 
 class BNFParser extends Parser {
 
@@ -29,23 +29,16 @@ class BNFParser extends Parser {
     $endRepeat = $pda->createNode(Token::END_REPEAT);
 
     // Define transtions
-$test = array(); // test nodes
     $pda->when(PDA::START)->transition(array(
       Token::IDENTIFIER => $lhsRule
-    ))->with(function($to, $from) use ($ast, $test) {
+    ))->with(function($to, $from) use ($ast) {
       echo "START: Transitioning from $from to $to\n";
-      $child = 'grammar';
-      //echo "\tAdding child $child to empty array\n";
-      array_push($test, $child);
     });
 
     $pda->when($lhsRule)->transition(array(
       Token::ASSIGNMENT => $assignment
-    ))->with(function($to, $from) use (&$test) {
+    ))->with(function($to, $from) {
       echo "1. Transitioned from $from to $to\n";
-      $child = 'production';
-      //echo "\tAdding child '$child' to node '" . end($test) . "'\n";
-      array_push($test, $child);
     });
 
     // Define an AST node with left child as the class and the right child as the rule
@@ -54,10 +47,8 @@ $test = array(); // test nodes
       Token::IDENTIFIER   => $rhsRule,
       Token::TOKEN        => $token,
       Token::BEGIN_REPEAT => $beginRepeat
-    ))->with(function($to, $from) use (&$test) {
+    ))->with(function($to, $from) {
       echo "2. Transitioned from $from to $to\n";
-      $child = $to;
-      //echo "\tAdding child '$child' to node '" . end($test) . "'\n";
     });
 
     $pda->when($string)->transition(array(
@@ -68,20 +59,8 @@ $test = array(); // test nodes
       Token::TOKEN        => $token,
       Token::BEGIN_REPEAT => $beginRepeat,
       Token::END_REPEAT   => $endRepeat
-    ))->with(function($to, $from) use (&$test) {
+    ))->with(function($to, $from) {
       echo "3. Transitioned from $from to $to\n";
-      $child = "";
-      switch ($to)  {
-        case Token::PIPE:
-          break;
-        case Token::SEMICOLON:
-
-          break;
-        default:
-          $child = $to;
-      }
-      $child = $to;
-      //echo "\tAdding child '$child' to node '" . end($test) . "'\n";
     });
 
     $pda->when($pipe)->transition(array(
