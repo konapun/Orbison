@@ -121,12 +121,14 @@ class BNFParser extends Parser {
 
     $pda->when($semicolon)->transition(array(
       Token::IDENTIFIER => $lhsRule
-    ))->terminal()->with(function($to, $from) use ($pda) {
-      $pda->requireEmptyStack(); // any END_REPEAT token must occur within the same rule
+    ))->terminal()->with(function($to, $from) {
       echo "4. Transitioned from $from to $to\n";
     });
 
     $pda->stackMatch(Token::END_REPEAT, Token::BEGIN_REPEAT);
+    $pda->onTransition(array($pipe, $semicolon), function() use ($pda) {
+      $pda->requireEmptyStack(); // any END_REPEAT token must occur within the same rule
+    });
 
     $pda->onTransition(function($node) {
       echo "-------------Transitioning-------------\n";
