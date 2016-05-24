@@ -6,7 +6,7 @@ use Orbison\Metasyntax\BNF\BNFParser as BNFParser;
 
 $bnfMetasyntax = <<<EOS
 (* Micro CFG from sample *)
-<program>   ::= "begin" <stat-list> "end";
+<program>   ::= "begin" <stat-list> "end" {action};
 <stat-list> ::= <statement>  ( <statement> );
 <statement> ::= [id] ":=" <expr> ";"
               | "read" "(" <id-list> ")" ";"

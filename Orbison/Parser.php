@@ -1,6 +1,7 @@
 <?php
 namespace Orbison;
 
+use Orbison\Token as Token;
 use Orbison\Parser\PDA as PDA;
 use Orbison\Exception\ParseException as ParseException;
 use Orbison\AST\Node as AST;

@@ -2,30 +2,21 @@
 namespace Orbison\Exception;
 
 class SyntaxException extends \LogicException {
-  //private $line;
-  private $offset;
-  //private $file;
-
-  function __construct($message, $line, $offset, $file=null) {
-    //$this->line = $line;
+  function __construct($message, $code, $line, $offset, $file=null) {
+    $this->code = $code;
+    $this->line = $line;
     $this->offset = $offset;
-    //$this->file = $file;
+    $this->file = $file;
 
-    $err = $message;
-    if ($offset) {
-      $err .= " around position $offset";
-    }
-    if ($file) {
-      $err .= " in file $file";
-    }
-    parent::__construct($err);
+    parent::__construct($message);
   }
 
-/*
-  function getFile() {
-    // TODO
-    return "TODO";
+  function getErrorCode() {
+    $code = str_replace(array("\r\n","\n\r","\r"), "\n", $this->code);
+    $offset = $this->offset;
+
+    $end = strpos($code, "\n",  $offset);
+    return substr($code, $offset, $end-$offset);
   }
-*/
 }
 ?>

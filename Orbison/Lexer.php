@@ -29,7 +29,17 @@ abstract class Lexer {
     return $tokens;
   }
 
+  /*
+   * Break a
+   */
   final function tokenize($source) {
+    if (file_exists($source)) {
+      return $this->tokenizeSource(file_get_contents($source), $source);
+    }
+    return $this->tokenizeSource($source);
+  }
+
+  private function tokenizeSource($source, $file='(source code)')  {
     $lineNumber = 1;
     $offset = 0;
 
@@ -38,7 +48,7 @@ abstract class Lexer {
       $string = substr($source, $offset);
       $result = $this->match($string, $lineNumber, $offset);
       if ($result === false) {
-        throw new SyntaxException($string, $lineNumber, $offset); // FIXME
+        throw new SyntaxException("Syntax Exception", $source, $lineNumber, $offset, $file); // FIXME
       }
 
       list($token, $match) = $result;
