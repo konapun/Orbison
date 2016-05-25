@@ -24,5 +24,6 @@ include_once($astBase . 'Visitor.php');
 include_once($parserBase . 'PDA.php');
 include_once($parserBase . 'StateNode.php');
 
+include_once($metaBase . 'Factory.php');
 include_once($bnfBase . 'BNF.php');
 ?>
