@@ -133,6 +133,19 @@ class BNFParser extends Parser {
       $pda->requireEmptyStack(); // any END_REPEAT token must occur within the same rule
     });
 
+    /* AST stuff */
+    $nodes = array('GRAMMAR');
+    $pda->onTransition($lhsRule, function() use (&$nodes) {
+      $currNode = end($nodes);
+      echo "Pushing PRODUCTION onto $currNode\n";
+      array_push($nodes, 'PRODUCTION');
+    });
+    $pda->onTransition($assignment, function() use (&$nodes) {
+      $currNode = end($nodes);
+      echo "Pushing EXPRESSION onto $currNode\n";
+      array_push($nodes, 'EXPRESSION');
+    });
+
     /* DEBUG */
     $pda->onTransition(function($node, $prev, $token) {
       echo "------------- Transitioning -------------\n";

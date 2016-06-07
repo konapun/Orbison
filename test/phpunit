@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+use phpunit\framework\TestCase;
+
+/*
+ * Run all subtests
+ */
+class TestMain extends TestCase {
+
+  function parserWorking() {
+    // TODO
+  }
+
+  function lexerWorking() {
+    // TODO
+  }
+
+  function pdaWorking() {
+    // TODO
+  }
+
+  function metasyntaxWorking() {
+    // TODO
+  }
+}
+?>

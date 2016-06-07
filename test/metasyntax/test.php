@@ -4,32 +4,20 @@ include_once('Orbison.php');
 use Orbison\Metasyntax\BNF\BNFLexer as BNFLexer;
 use Orbison\Metasyntax\BNF\BNFParser as BNFParser;
 
-$bnfMetasyntax = <<<EOS
-(* Micro CFG from sample *)
-<program>   ::= "begin" <stat-list> "end" {action};
-<stat-list> ::= <statement>  ( <statement> );
-<statement> ::= [id] ":=" <expr> ";"
-              | "read" "(" <id-list> ")" ";"
-              | "write" "(" <expr-list> ")" ";"
-            ;
-<id-list>   ::= [id] ( "," [id] );
-<expr-list> ::= <expr> ( "," <expr> );
-<expr>      ::= <primary> ( <addop> <primary> );
-<primary>   ::= ( <expr> )
-              | [id]
-              | [intliteral]
-            ;
-<addop>     ::= "+"
-              | "-"
-            ;
-EOS;
-
+$file = dirname(__FILE__) . '/examples/micro-cfg.bnf';
 $lexer = new BNFLexer();
 $parser = new BNFParser();
-$tokens = $lexer->tokenize($bnfMetasyntax);
+
+$tokens = array();
+try {
+  $tokens = $lexer->tokenize($file);
+}
+catch (Exception $e) {
+  print $e->getMessage() . " at " . $e->getErrorCode() . " (line " . $e->getLine() . ")\n";
+}
 
 foreach ($tokens as $token) {
-  echo "$token (" . $token->getType() . ")\n";
+  print "$token (" . $token->getType() . ")\n";
 }
 
 $parser->parse($tokens);

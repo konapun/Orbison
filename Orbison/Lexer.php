@@ -48,14 +48,14 @@ abstract class Lexer {
       $string = substr($source, $offset);
       $result = $this->match($string, $lineNumber, $offset);
       if ($result === false) {
-        throw new SyntaxException("Syntax Exception", $source, $lineNumber, $offset, $file); // FIXME
+        throw new SyntaxException("Syntax Exception", $source, $lineNumber, $offset, $file);
       }
 
       list($token, $match) = $result;
       array_push($tokens, $token);
 
       $offset += strlen($match);
-      $lineNumber += substr_count($string, str_replace(array("\r\n","\n\r","\r"), "\n", $string)); // increment line number by all types of newlines
+      $lineNumber += substr_count($string, str_replace(array("\r\n","\n\r","\r"), "\n", $string)); // increment line number by all types of newlines FIXME lineNumber is wrong because $string is the entire string from offset to the end
     }
 
     return $this->postLex($this->removeSkippedTokens($tokens));
