@@ -3,6 +3,7 @@ namespace Orbison\Metasyntax\BNF;
 
 use Orbison\Parser as Parser;
 use Orbison\Parser\PDA as PDA;
+use Orbison\Parser\FluentPDA as FluentPDA;
 use Orbison\Metasyntax\BNF\BNFToken as Token;
 use Orbison\Metasyntax\BNF\AST\Grammar as Grammar;
 use Orbison\Metasyntax\BNF\AST\Production as Production;
@@ -31,19 +32,20 @@ class BNFParser extends Parser {
     $endRepeat = $pda->createNode(Token::END_REPEAT);
 
     /* Define transtions */
-    $pda->when(PDA::START)->transition(array(
+    $fluentPda = new FluentPDA($pda);
+    $fluentPda->when(PDA::START)->transition(array(
       Token::IDENTIFIER => $lhsRule
     ))->with(function($to, $from) use ($currNode) {
       echo "START: Transitioning from $from to $to\n";
     });
 
-    $pda->when($lhsRule)->transition(array(
+    $fluentPda->when($lhsRule)->transition(array(
       Token::ASSIGNMENT => $assignment
     ))->with(function($to, $from) {
       echo "1. Transitioned from $from to $to\n";
     });
 
-    $pda->when($assignment)->transition(array(
+    $fluentPda->when($assignment)->transition(array(
       Token::STRING       => $string,
       Token::IDENTIFIER   => $rhsRule,
       Token::TOKEN        => $token,
@@ -52,7 +54,7 @@ class BNFParser extends Parser {
       echo "2. Transitioned from $from to $to\n";
     });
 
-    $pda->when($string)->transition(array(
+    $fluentPda->when($string)->transition(array(
       Token::STRING       => $string,
       Token::SEMICOLON    => $semicolon,
       Token::IDENTIFIER   => $rhsRule,
@@ -64,7 +66,7 @@ class BNFParser extends Parser {
       echo "3. Transitioned from $from to $to\n";
     });
 
-    $pda->when($pipe)->transition(array(
+    $fluentPda->when($pipe)->transition(array(
       Token::STRING       => $string,
       Token::IDENTIFIER   => $rhsRule,
       Token::TOKEN        => $token,
@@ -73,7 +75,7 @@ class BNFParser extends Parser {
       echo "5. Transitioned from $from to $to\n";
     });
 
-    $pda->when($rhsRule)->transition(array(
+    $fluentPda->when($rhsRule)->transition(array(
       Token::STRING       => $string,
       Token::PIPE         => $pipe,
       Token::IDENTIFIER   => $rhsRule,
@@ -85,7 +87,7 @@ class BNFParser extends Parser {
       echo "6. Transitioned from $from to $to\n";
     });
 
-    $pda->when($token)->transition(array(
+    $fluentPda->when($token)->transition(array(
       Token::STRING       => $string,
       Token::PIPE         => $pipe,
       Token::IDENTIFIER   => $rhsRule,
@@ -97,11 +99,11 @@ class BNFParser extends Parser {
       echo "7: Transitioned from $from to $to\n";
     });
 
-    $pda->when($action)->transition(array(
+    $fluentPda->when($action)->transition(array(
       Token::SEMICOLON => $semicolon
     ));
 
-    $pda->when($beginRepeat)->transition(array(
+    $fluentPda->when($beginRepeat)->transition(array(
       Token::STRING     => $string,
       Token::PIPE       => $pipe,
       Token::IDENTIFIER => $rhsRule,
@@ -110,7 +112,7 @@ class BNFParser extends Parser {
       echo "8: Transitioned from $from to $to\n";
     });
 
-    $pda->when($endRepeat)->transition(array(
+    $fluentPda->when($endRepeat)->transition(array(
       Token::STRING       => $string,
       Token::PIPE         => $pipe,
       Token::IDENTIFIER   => $rhsRule,
@@ -121,7 +123,7 @@ class BNFParser extends Parser {
       echo "9: Transitioned from $from to $to\n";
     });
 
-    $pda->when($semicolon)->transition(array(
+    $fluentPda->when($semicolon)->transition(array(
       Token::IDENTIFIER => $lhsRule
     ))->terminal()->with(function($to, $from) {
       echo "4. Transitioned from $from to $to\n";

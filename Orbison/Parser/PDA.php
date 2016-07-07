@@ -83,13 +83,6 @@ class PDA {
   }
 
   /*
-   * Fluent interface for building the network
-   */
-  function when($nodeID) {
-    return new FluentNode($this, $nodeID);
-  }
-
-  /*
    * When on $node1 and see $edge, move to $node2
    */
   function addTransition($node1, $edge, $node2) {
@@ -267,54 +260,4 @@ class PDA {
   }
 }
 
-class FluentNode {
-  private $pda;
-  private $nodeID;
-
-  function __construct($pda, $nodeID) {
-    $this->pda = $pda;
-    $this->nodeID = $nodeID;
-  }
-
-  /*
-   * Map node encounters to transitions
-   */
-  function transition($map) {
-    $pda = $this->pda;
-    $nodeID = $this->nodeID;
-    $edges = array();
-    foreach ($map as $token => $match) {
-      array_push($edges, $token);
-      $pda->addTransition($nodeID, $token, $match);
-    }
-
-    return new FluentTransition($pda, $nodeID, $edges);
-  }
-}
-
-class FluentTransition {
-  private $pda;
-  private $nodeID;
-  private $edges;
-
-  function __construct($pda, $nodeID, $edges) {
-    $this->pda = $pda;
-    $this->nodeID = $nodeID;
-    $this->edges = $edges;
-  }
-
-  function with($event) {
-    $pda = $this->pda;
-    $nodeID = $this->nodeID;
-    foreach ($this->edges as $edge) {
-      $pda->onTransitionFrom($nodeID, $edge, $event);
-    }
-    return $this;
-  }
-
-  function terminal() {
-    $this->pda->addTransition($this->nodeID, PDA::ACCEPT, PDA::ACCEPT);
-    return $this;
-  }
-}
 ?>

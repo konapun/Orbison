@@ -30,7 +30,8 @@ abstract class Lexer {
   }
 
   /*
-   * Break a
+   * Break a source string into tokens defined by the concrete lexer's `tokens`
+   * method
    */
   final function tokenize($source) {
     if (file_exists($source)) {
@@ -39,6 +40,7 @@ abstract class Lexer {
     return $this->tokenizeSource($source);
   }
 
+  // FIXME - line numbers and offsets not preserved
   private function tokenizeSource($source, $file='(source code)')  {
     $lineNumber = 1;
     $offset = 0;
