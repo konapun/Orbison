@@ -14,7 +14,9 @@ class BNFLexer extends Lexer {
       '/^\(\*(.*?)(?=\*\))/s'    => Lexer::SKIP, // (* block comment *)
       '/^(\*\))/'                => Lexer::SKIP, // hack needed because the capture in the line above doesn't include the closing and will throw off the lexer offset
       '/^(::=)/'                 => Token::ASSIGNMENT, // ::=
+      "/^'([^']*)'/"             => Token::STRING, // 'string'
       '/^"([^"]*)"/'             => Token::STRING, // "string"
+      // '/^\"(\\.|[^\"])*\"/'      => Token::STRING, // FIXME - escaped string
       '/^(\|)/'                  => Token::PIPE, // |
       '/^(;)/'                   => Token::SEMICOLON, // ;
       '/^<([^>]*)>/'             => Token::IDENTIFIER, // <rule>

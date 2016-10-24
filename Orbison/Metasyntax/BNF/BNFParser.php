@@ -31,11 +31,14 @@ class BNFParser extends Parser {
     $beginRepeat = $pda->createNode(Token::BEGIN_REPEAT);
     $endRepeat = $pda->createNode(Token::END_REPEAT);
 
+    /* AST root */
+    $ast = new TestNode();
+
     /* Define transtions */
     $fluentPda = new FluentPDA($pda);
     $fluentPda->when(PDA::START)->transition(array(
       Token::IDENTIFIER => $lhsRule
-    ))->with(function($to, $from) use ($currNode) {
+    ))->with(function($to, $from) {
       echo "START: Transitioning from $from to $to\n";
     });
 

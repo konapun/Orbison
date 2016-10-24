@@ -1,0 +1,148 @@
+{
+  "type": "grammar",
+  "children": [
+    {
+      "type": "production",
+      "children": [
+        {
+          "type": "identifier",
+          "name": "grammar"
+        },
+        {
+          "type": "expression",
+          "children": [
+            {
+              "type": "term",
+              "children": [
+                {
+                  "type": "factor",
+                  "children": [
+                    {
+                      "type": "("
+                    },
+                    {
+                      "type": "expression",
+                      "children": [
+                        {
+                          "type": "term",
+                          "children": [
+                            {
+                              "type": "factor",
+                              "children": [
+                                {
+                                  "type": "identifier"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "("
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "production",
+      "children": [
+        {
+          "type": "identifier",
+          "name": "production"
+        },
+        {
+          "type": "expression",
+          "children": [
+            {
+              "type": "term",
+              "children": [
+                {
+                  "type": "factor",
+                  "children": [
+                    {
+                      "type": "token",
+                      "name": "IDENTIFIER"
+                    }
+                  ]
+                },
+                {
+                  "type": "factor",
+                  "children": [
+                    {
+                      "type": "string",
+                      "value": "::="
+                    }
+                  ]
+                },
+                {
+                  "type": "factor",
+                  "children": [
+                    {
+                      "type": "identifier",
+                      "value": "expression"
+                    }
+                  ]
+                },
+                {
+                  "type": "factor",
+                  "children": [
+                    {
+                      "type": "string",
+                      "value": ";"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "production",
+      "children": [
+        {
+          "type": "identifier",
+          "value": "expression"
+        },
+        {
+          "type": "expression",
+          "children": [
+            {
+              "type": "term",
+              "children": [
+                {
+                  "type": "factor",
+                  "children": [
+                    {
+                      "type": "identifier",
+                      "value": "term"
+                    }
+                  ]
+                },
+                {
+                  "type": "factor",
+                  "children": [
+                    {
+
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+PRODUCTION: <grammar> ::= ( <production> )
+- grammar
+-- identifier

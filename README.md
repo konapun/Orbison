@@ -70,3 +70,6 @@ $compiler->compile('language.bnf');
 
 # Resources
 http://www.cs.uwm.edu/classes/cs631/slides/02BNF.pdf
+
+#TODO
+  * [Escaped chars in lexer](http://stackoverflow.com/questions/5418181/flex-lex-encoding-strings-with-escaped-characters)
