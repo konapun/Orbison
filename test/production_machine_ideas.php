@@ -1,29 +1,19 @@
 <?php
 // <grammar> ::= ( <production> );
-$prod1 = $productionMachine->addProduction();
-$prod1->zeroOrMore($prod2);
+$grammar = $productionMachine->addProduction('grammar');
+$grammar->zeroOrMore('production');
 
 // <production> ::= [IDENTIFIER] "::=" <expression> ";";
-$prod2 = $productionMachine->addProduction();
-$prod2
-  ->transition(Token::IDENTIFIER)
-  ->transition('::=')
-  ->transition($prod3)
-  ->transition(';');
+$production = $productionMachine->addProduction('production');
+$production->series(array(Token::IDENTIFIER, '::=', 'expression', ';'));
 
 // <expression> ::= <term>  ( "|" <term> );
-$prod3 = $productionMachine->addProduction();
-$prod3
-  ->transition($prod4)
-  ->zeroOrMore(function() {
-    $this
-      ->transition('|')
-      ->transition($prod4);
-  });
+$expression = $productionMachine->addProduction('expression');
+$expression->series(array('term', $expression->zeroOrMore(array('|', 'term')));
 
 // <term> ::= <factor> ( <factor> );
-$prod4 = $productionMachine->addProduction();
-$prod4->oneOrMore($prod5);
+$term = $productionMachine->addProduction('term');
+$term->oneOrMore('factor');
 
 // <factor>     ::= '"' [STRING] '"'
 //                | "'" [STRING] "'"
@@ -31,8 +21,8 @@ $prod4->oneOrMore($prod5);
 //                | "[" [TOKEN] "]"
 //                | "(" <expression> ")"
 //              ;
-$prod5 = $productionMachine->addProduction();
-$prod5->orBlock(array(
+$factor = $productionMachine->addProduction('factor');
+$factor->orBlock(array(
   array('"', Token::STRING, '"'),
   array("'",  Token::STRING, "'"),
   array('<', Token::IDENTIFIER, '>'),

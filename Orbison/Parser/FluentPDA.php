@@ -67,6 +67,10 @@ class FluentTransition {
     return $this;
   }
 
+  function getNodeID() {
+    return $this->nodeID;
+  }
+
   function terminal() {
     $this->pda->addTransition($this->nodeID, PDA::ACCEPT, PDA::ACCEPT);
     return $this;
