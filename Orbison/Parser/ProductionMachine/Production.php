@@ -11,7 +11,8 @@ class Production {
   private $currentNode;
 
   function __construct($pda, $node) {
-    $this->pda = new FluentPDA($pda);
+    $this->pda = $pda;
+    $this->fluentPDA = new FluentPDA($pda);
     $this->currentNode = $node;
   }
 
@@ -22,14 +23,7 @@ class Production {
     foreach ($units as $unit) {
       $this->one($unit);
     }
-  }
-
-  /*
-   * Abstraction for:
-   *  ( <rule> )
-   */
-  function zeroOrMore($unit) {
-    // $this->pda->when($this->currentNode)->transition()
+    return $this;
   }
 
   /*
@@ -37,9 +31,9 @@ class Production {
    *  <rule> ( <rule> )
    */
   function oneOrMore($unit) {
-    $this->pda->when($this->currentNode)->transition(array(
-      $unit => $unit
-    ));
+    $node = $this->one($unit);
+    $this->fluentPda->when($node)->transition(array( $node => $node ));
+    return $node;
   }
 
   /*
@@ -47,7 +41,10 @@ class Production {
    *  <rule>
    */
   function one($unit) {
-    $this->currentNode = $this->pda->when($this->currentNode)->transition(array( $unit => $unit))->getNodeID();
+    $node = $this->pda->createNode($unit);
+    $this->fluentPda->when($this->currentNode)->transition(array( $unit => $node ));
+    $this->currentNode = $node;
+    return $this;
   }
 
   /*
@@ -57,7 +54,10 @@ class Production {
    *  | <thing1>
    */
   function orSeries($units) {
+    foreach ($units as $series) {
 
+    }
+    return $this;
   }
 
   /*
@@ -66,10 +66,12 @@ class Production {
    */
   function orOneOf($choices) {
     $pda = $this->pda;
-    $transitions = $fn();
+    $currentNode = $this->currentNode;
     foreach ($choices as $choice) {
-
+      $this->one($choice);
+      $this->currentNode = $currentNode;
     }
+    return $this;
   }
 }
 ?>

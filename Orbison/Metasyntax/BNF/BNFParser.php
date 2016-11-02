@@ -26,8 +26,8 @@ class BNFParser extends Parser {
     $term = $productionMachine->createProduction('term');
     $factor = $productionMachine->createProduction('factor');
 
-    // <grammar> ::= ( <production> );
-    $grammar->zeroOrMore($production);
+    // <grammar> ::= <production> ( <production> );
+    $grammar->oneOrMore($production);
 
     // <production> ::= [IDENTIFIER] "::=" <expression> ";";
     $production->series(array( Token::IDENTIFIER, Token::ASSIGNMENT, $expression, Token::SEMICOLON ));
