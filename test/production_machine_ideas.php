@@ -5,11 +5,11 @@ $grammar->zeroOrMore('production');
 
 // <production> ::= [IDENTIFIER] "::=" <expression> ";";
 $production = $productionMachine->addProduction('production');
-$production->series(array(Token::IDENTIFIER, '::=', 'expression', ';'));
+$production->series(array(Token::IDENTIFIER, Token::ASSIGNMENT, 'expression', Token::SEMICOLON));
 
 // <expression> ::= <term>  ( "|" <term> );
 $expression = $productionMachine->addProduction('expression');
-$expression->series(array('term', $expression->zeroOrMore(array('|', 'term')));
+$expression->series(array('term', function($expr) { $expr->zeroOrMore(array('|', 'term')); });
 
 // <term> ::= <factor> ( <factor> );
 $term = $productionMachine->addProduction('term');

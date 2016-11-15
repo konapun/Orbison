@@ -27,16 +27,16 @@ class BNFParser extends Parser {
     $factor = $productionMachine->createProduction('factor');
 
     // <grammar> ::= <production> ( <production> );
-    $grammar->oneOrMore($production);
+    $grammar->oneOrMore($production->getID());
 
     // <production> ::= [IDENTIFIER] "::=" <expression> ";";
-    $production->series(array( Token::IDENTIFIER, Token::ASSIGNMENT, $expression, Token::SEMICOLON ));
+    $production->series(array( Token::IDENTIFIER, Token::ASSIGNMENT, $expression->getID(), Token::SEMICOLON ));
 
-    // <expression> ::= <term ( "|" <term> );
-    $expression->one($term)->oneOrMore(function($p) use ($term) { $p->series(array( Token::PIPE, $term )); });
+    // <expression> ::= <term> ( "|" <term> );
+    $expression->one($term->getID())->oneOrMoreSeries(array( Token::PIPE, $term->getID() ));
 
     // <term> ::= <factor> ( <factor> );
-    $term->oneOrMore($factor);
+    $term->oneOrMore($factor->getID());
 
     /*
      * <factor>     ::= '"' [STRING] '"'
@@ -46,7 +46,18 @@ class BNFParser extends Parser {
      *                | "(" <expression> ")"
      *              ;
      */
-    $factor->orOneOf(array( Token::STRING, Token::IDENTIFIER, Token::TOKEN, $expression ));
+    $factor->orOneOf(array( Token::STRING, Token::IDENTIFIER, Token::TOKEN, $expression->getID() ));
+
+    $pda->stackMatch(Token::END_REPEAT, Token::BEGIN_REPEAT);
+    // $pda->onTransition(array($pipe, $semicolon), function() use ($pda) {
+      // $pda->requireEmptyStack(); // any END_REPEAT token must occur within the same rule
+    // });
+
+    /* DEBUG */
+    $pda->onTransition(function($node, $prev, $token) {
+      echo "------------- Transitioning -------------\n";
+      //echo "Transitioning to $node (" . $node->getID() . ")\n";
+    });
   }
 
   /*

@@ -13,6 +13,7 @@ class Production {
   function __construct($pda, $node) {
     $this->pda = $pda;
     $this->fluentPDA = new FluentPDA($pda);
+    $this->id = $node;
     $this->currentNode = $node;
   }
 
@@ -31,9 +32,16 @@ class Production {
    *  <rule> ( <rule> )
    */
   function oneOrMore($unit) {
-    $node = $this->one($unit);
-    $this->fluentPda->when($node)->transition(array( $node => $node ));
-    return $node;
+    $node = $this->currentNode;
+    $this->one($unit);
+    $this->fluentPDA->when($node)->transition(array( $node => $node ));
+    return $this;
+  }
+
+  function oneOrMoreSeries($series) {
+    $node = $this->currentNode;
+    $this->one($series[0]);
+
   }
 
   /*
@@ -42,7 +50,7 @@ class Production {
    */
   function one($unit) {
     $node = $this->pda->createNode($unit);
-    $this->fluentPda->when($this->currentNode)->transition(array( $unit => $node ));
+    $this->fluentPDA->when($this->currentNode)->transition(array( $unit => $node ));
     $this->currentNode = $node;
     return $this;
   }
@@ -72,6 +80,14 @@ class Production {
       $this->currentNode = $currentNode;
     }
     return $this;
+  }
+
+  function finish() {
+    $this->pda->requireEmptyStack();
+  }
+
+  function getID() {
+    return $this->id;
   }
 }
 ?>
