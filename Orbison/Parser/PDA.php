@@ -22,7 +22,7 @@ use Orbison\Exception\StateException as StateException;
  * 	});
  */
 class PDA {
-
+  // Built-in nodes
   const START = '__start__';
   const ACCEPT = '__accept__';
   const FAIL = '__fail__';
@@ -181,6 +181,7 @@ class PDA {
       $this->state = $transitionNode;
     }
     else {
+print "Encountered error attempting to transition from $prev to $token\n";
       $this->state = $this->nodes[self::FAIL];
     }
 

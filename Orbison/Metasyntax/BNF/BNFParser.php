@@ -18,25 +18,30 @@ class BNFParser extends Parser {
    * Define rules in terms of production machine transitions on a PDA
    */
   protected function rules($pda, $ast) {
-    $productionMachine = new ProductionMachine($pda);
+    $productionMachine = new ProductionMachinea($pda);
 
+    // All productions in the language
     $grammar = $productionMachine->createProduction('grammar');
     $production = $productionMachine->createProduction('production');
     $expression = $productionMachine->createProduction('expression');
     $term = $productionMachine->createProduction('term');
     $factor = $productionMachine->createProduction('factor');
+    $epsilon = $productionMachine->createProduction('epsilon');
 
     // <grammar> ::= <production> ( <production> );
-    $grammar->oneOrMore($production->getID());
+    $grammar->addTerm()->addFactors(array( $production->getID(), $grammar->getID() ));
+    $grammar->addTerm()->addFactor($epsilon->getID());
 
     // <production> ::= [IDENTIFIER] "::=" <expression> ";";
-    $production->series(array( Token::IDENTIFIER, Token::ASSIGNMENT, $expression->getID(), Token::SEMICOLON ));
+    $production->addFactors(array( Token::IDENTIFIER, '::=', $expression->getID(), ';' ));
 
     // <expression> ::= <term> ( "|" <term> );
-    $expression->one($term->getID())->oneOrMoreSeries(array( Token::PIPE, $term->getID() ));
+    $expression->addTerm()->addFactor($term->getID());
+    $expression->addTerm()->addFactors(array( Token::PIPE, $term->getID() ));
 
     // <term> ::= <factor> ( <factor> );
-    $term->oneOrMore($factor->getID());
+    $term->addTerm()->addFactor($factor->getID());
+    $term->addTerm()->addFactors(array( $factor->getID(), $term->getID() ));
 
     /*
      * <factor>     ::= '"' [STRING] '"'
@@ -46,7 +51,9 @@ class BNFParser extends Parser {
      *                | "(" <expression> ")"
      *              ;
      */
-    $factor->orOneOf(array( Token::STRING, Token::IDENTIFIER, Token::TOKEN, $expression->getID() ));
+     $factor->addFactor(Token::STRING);
+     $factor->addFactor(Token::IDENTIFIER);
+     $factor->addFactor(Token::TOKEN);
 
     $pda->stackMatch(Token::END_REPEAT, Token::BEGIN_REPEAT);
     // $pda->onTransition(array($pipe, $semicolon), function() use ($pda) {

@@ -1,33 +1,30 @@
 <?php
-// <grammar> ::= ( <production> );
-$grammar = $productionMachine->addProduction('grammar');
-$grammar->zeroOrMore('production');
+include_once('Orbison.php');
+include_once('test/lexer/CalcLexer.php');
+include_once('test/parser/CalcParser.php');
 
-// <production> ::= [IDENTIFIER] "::=" <expression> ";";
-$production = $productionMachine->addProduction('production');
-$production->series(array(Token::IDENTIFIER, Token::ASSIGNMENT, 'expression', Token::SEMICOLON));
+use Orbison\Test\CalcLexer as CalcLexer;
+use Orbison\Test\CalcParser as CalcParser;
 
-// <expression> ::= <term>  ( "|" <term> );
-$expression = $productionMachine->addProduction('expression');
-$expression->series(array('term', function($expr) { $expr->zeroOrMore(array('|', 'term')); });
+$lexer = new CalcLexer();
+$parser = new CalcParser();
 
-// <term> ::= <factor> ( <factor> );
-$term = $productionMachine->addProduction('term');
-$term->oneOrMore('factor');
+/*
+ * Test grammar:
+ *
+ * <add> ::= [NUMBER] [PLUS] [NUMBER]
+ */
+$input_good = array('1 + 2');
+$input_bad = array('1 + F', '1 - 2');
 
-// <factor>     ::= '"' [STRING] '"'
-//                | "'" [STRING] "'"
-//                | "<" [IDENTIFIER] ">"
-//                | "[" [TOKEN] "]"
-//                | "(" <expression> ")"
-//              ;
-$factor = $productionMachine->addProduction('factor');
-$factor->orBlock(array(
-  array('"', Token::STRING, '"'),
-  array("'",  Token::STRING, "'"),
-  array('<', Token::IDENTIFIER, '>'),
-  array('[', Token::TOKEN, ']'),
-  array('(', $prod3, ')')
-));
+$tokens = array();
+try {
+  $tokens = $lexer->tokenize($input_good[0]);
+}
+catch (Exception $e) {
+  print $e->getMessage();
+  exit(1);
+}
 
+$parser->parse($tokens);
 ?>

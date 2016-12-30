@@ -1,10 +1,13 @@
 <?php
 namespace Orbison\Parser;
 
+use Orbison\Parser\PDA as PDA;
 use Orbison\Parser\ProductionMachine\Production as Production;
 
 /*
  * An abstraction for defining a grammar on top of a PDA
+ *
+ * TODO: need to think in terms of transitions and how to abstract them - start with hand-drawn PDA and create API
  */
 class ProductionMachine {
   private $pda;
@@ -23,7 +26,7 @@ class ProductionMachine {
    * created. The resulting production is just an abstraction which modifies the
    * underlying machine.
    */
-  function createProduction($name) {
+  function createProduction($name) { // $name is the production identifier from the grammar
     $node = $this->pda->createNode($name);
 
     $production = new Production($this->pda, $node);
@@ -31,6 +34,7 @@ class ProductionMachine {
     if ($this->startProduction === null) {
       $this->startProduction = $name;
     }
+
     return $production;
   }
 
@@ -41,7 +45,11 @@ class ProductionMachine {
   function exportPDA() {
     $production = $this->productions[$this->startProduction];
 
-    return $this->pda;
+    $pda = $this->pda;
+var_dump($this->startProduction);
+print "Adding transition from " . PDA::START . " on edge " . $this->startProduction . " to node " . $this->startProduction . "\n";
+    $pda->addTransition(PDA::START, $this->startProduction, $this->startProduction);
+    return $pda;
   }
 }
 ?>
