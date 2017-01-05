@@ -2,7 +2,7 @@
 namespace Orbison\Metasyntax\BNF;
 
 use Orbison\Parser as Parser;
-use Orbison\Parser\PDA as PDA;
+use Orbison\Parser\PDA as PDA; // TODO: remove once production machine is working
 use Orbison\Parser\FluentPDA as FluentPDA;
 use Orbison\Parser\ProductionMachine as ProductionMachine;
 use Orbison\Metasyntax\BNF\BNFToken as Token;
@@ -17,8 +17,8 @@ class BNFParser extends Parser {
   /*
    * Define rules in terms of production machine transitions on a PDA
    */
-  protected function rules($pda, $ast) {
-    $productionMachine = new ProductionMachinea($pda);
+  protected function rules() {
+    $productionMachine = new ProductionMachine();
 
     // All productions in the language
     $grammar = $productionMachine->createProduction('grammar');
@@ -29,19 +29,19 @@ class BNFParser extends Parser {
     $epsilon = $productionMachine->createProduction('epsilon');
 
     // <grammar> ::= <production> ( <production> );
-    $grammar->addTerm()->addFactors(array( $production->getID(), $grammar->getID() ));
+    $grammar->addTerm()->addFactor(array( $production->getID(), $grammar->getID() ));
     $grammar->addTerm()->addFactor($epsilon->getID());
 
     // <production> ::= [IDENTIFIER] "::=" <expression> ";";
-    $production->addFactors(array( Token::IDENTIFIER, '::=', $expression->getID(), ';' ));
+    $production->addFactor(array( Token::IDENTIFIER, '::=', $expression->getID(), ';' ));
 
     // <expression> ::= <term> ( "|" <term> );
     $expression->addTerm()->addFactor($term->getID());
-    $expression->addTerm()->addFactors(array( Token::PIPE, $term->getID() ));
+    $expression->addTerm()->addFactor(array( Token::PIPE, $term->getID() ));
 
     // <term> ::= <factor> ( <factor> );
     $term->addTerm()->addFactor($factor->getID());
-    $term->addTerm()->addFactors(array( $factor->getID(), $term->getID() ));
+    $term->addTerm()->addFactor(array( $factor->getID(), $term->getID() ));
 
     /*
      * <factor>     ::= '"' [STRING] '"'
@@ -51,10 +51,11 @@ class BNFParser extends Parser {
      *                | "(" <expression> ")"
      *              ;
      */
-     $factor->addFactor(Token::STRING);
-     $factor->addFactor(Token::IDENTIFIER);
-     $factor->addFactor(Token::TOKEN);
+    $factor->addFactor(Token::STRING);
+    $factor->addFactor(Token::IDENTIFIER);
+    $factor->addFactor(Token::TOKEN);
 
+    $pda = $productionMachine->exportPDA();
     $pda->stackMatch(Token::END_REPEAT, Token::BEGIN_REPEAT);
     // $pda->onTransition(array($pipe, $semicolon), function() use ($pda) {
       // $pda->requireEmptyStack(); // any END_REPEAT token must occur within the same rule
@@ -65,6 +66,8 @@ class BNFParser extends Parser {
       echo "------------- Transitioning -------------\n";
       //echo "Transitioning to $node (" . $node->getID() . ")\n";
     });
+
+    return $pda;
   }
 
   /*
@@ -73,7 +76,8 @@ class BNFParser extends Parser {
    *
    * TODO: remove once `rules` is working
    */
-  protected function rules2($pda, $ast) {
+  protected function rules2() {
+    $pda = new PDA();
 
     /* Define PDA nodes */
     $lhsRule = $pda->createNode(Token::IDENTIFIER); // The production identifier
@@ -214,6 +218,8 @@ class BNFParser extends Parser {
       echo "------------- Transitioning -------------\n";
       //echo "Transitioning to $node (" . $node->getID() . ")\n";
     });
+
+    return $pda;
   }
 }
 ?>

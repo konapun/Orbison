@@ -28,6 +28,7 @@ include_once($parserBase . 'StateNode.php');
 
 include_once($parserBase . 'ProductionMachine.php');
 include_once($prodMachineBase . 'Production.php');
+include_once($prodMachineBase . 'Term.php');
 
 include_once($metaBase . 'Factory.php');
 include_once($bnfBase . 'BNF.php');

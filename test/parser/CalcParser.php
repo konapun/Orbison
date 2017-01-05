@@ -2,13 +2,14 @@
 namespace Orbison\Test;
 
 use Orbison\Parser as Parser;
+use Orbison\Parser\PDA as PDA;
 use Orbison\Parser\ProductionMachine as ProductionMachine;
 use Orbison\Test\CalcLexer as CalcLexer;
 
 class CalcParser extends Parser {
 
-  protected function rules($pda, $ast) {
-    $productionMachine = new ProductionMachine($pda);
+  protected function rules() {
+    $productionMachine = new ProductionMachine(new PDA());
 
     $addRule = $productionMachine->createProduction('add');
 
@@ -21,6 +22,8 @@ class CalcParser extends Parser {
       echo "------------- Transitioning -------------\n";
       echo "Transitioning to $node (" . $node->getID() . ")\n";
     });
+
+    return $pda;
   }
 }
 ?>

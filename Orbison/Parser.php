@@ -10,10 +10,10 @@ abstract class Parser {
   const EPSILON = '__epsilon__';
 
   /*
-   * The rules method takes the start node of a state machine and sets up all
-   * other nodes and transitions.
+   * The rules method returns an instance of `Orbison\Parser\PDA` with
+   * transitions describing the language
    */
-  abstract protected function rules($pda, $ast);
+  abstract protected function rules();
 
   /*
    * Instantiate the PDA by calling the concrete parser to establish rules.
@@ -23,11 +23,10 @@ abstract class Parser {
    * callbacks within the PDA
    */
   final function parse($tokens) {
-    $pda = new PDA();
     $ast = new AST(self::EPSILON);
 
+    $pda = $this->rules(); // call to abstract function from concrete implementor
     $this->handleErrors($pda, $tokens);
-    $this->rules($pda, $ast); // call to abstract function from concrete implementor
 
     $pda->reset();
     foreach ($tokens as $token) {

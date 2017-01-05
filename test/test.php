@@ -20,4 +20,5 @@ $term->addFactor([ $factor, $term ]);
 $factor->addFactor(Token::STRING);
 $factor->addFactor(Token::IDENTIFIER);
 $factor->addFactor(Token::TOKEN);
+
 ?>
