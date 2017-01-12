@@ -11,11 +11,13 @@ class ProductionMachine {
   private $pda;
   private $startProduction;
   private $productions;
+  private $pdaNodeMap;
 
   function __construct() {
     $this->pda = new PDA();
     $this->startProduction = null;
     $this->productions = array();
+    $this->pdaNodeMap = array();
   }
 
   /*
@@ -25,10 +27,10 @@ class ProductionMachine {
    * underlying machine.
    */
   function createProduction($name) { // $name is the production identifier from the grammar
-    $production = new Production($this);
+    $production = new Production($this, $name);
     $this->productions[$name] = $production;
     if ($this->startProduction === null) {
-      $this->startProduction = $production;
+      $this->startProduction = $name;
     }
 
     return $production;
@@ -40,12 +42,51 @@ class ProductionMachine {
    */
   function exportPDA() {
     $pda = $this->pda;
-    $production = $this->productions[$this->startProduction];
+    $startNode = $this->getOrCreateNode($this->startProduction);
 
-    // TODO - build the PDA!
+    $currentNode = $startNode;
+    foreach ($this->productions as $productionName => $production) {
+      $this->buildProduction($production);
+    }
 
-    $pda->addTransition(PDA::START, $this->startProduction, $this->startProduction);
+    print "(START) Adding transition from PDA_START on" . $this->startProduction . " to $startNode\n";
+    $pda->addTransition(PDA::START, $this->startProduction, $startNode);
     return $pda;
   }
+
+  private function buildProduction($production) {
+    $pda = $this->pda;
+    $productionNode = $this->getOrCreateNode($production->getID());
+
+    foreach ($production->getTerms() as $term) { // terms are branches in a production
+      $currentFactor = null;
+      foreach ($term->getFactors() as $factor) {
+        $factorNode = $this->getOrCreateNode($factor);
+        if (!$currentFactor) {
+          print "(BRANCH) Adding transition from $productionNode on $factor to $factorNode\n";
+          $pda->addTransition($productionNode, $factor, $factorNode);
+        }
+        else {
+          print "(FACTOR) Adding transition from $currentFactor on $factor to $factorNode\n";
+          $pda->addTransition($currentFactor, $factor, $factorNode);
+        }
+
+        $currentFactor = $factorNode;
+      }
+    }
+
+    return $productionNode;
+  }
+
+  private function getOrCreateNode($productionID) {
+    if (array_key_exists($productionID, $this->pdaNodeMap)) {
+      return $this->pdaNodeMap[$productionID];
+    }
+
+    $pdaNode = $this->pda->createNode($productionID);
+    $this->pdaNodeMap[$productionID] = $pdaNode;
+    return $pdaNode;
+  }
+
 }
 ?>

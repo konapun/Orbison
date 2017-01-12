@@ -8,10 +8,12 @@ use Orbison\Parser\ProductionMachine\Term as Term;
  */
 class Production {
   private $machine;
+  private $id;
   private $terms;
 
-  function __construct($machine) {
+  function __construct($machine, $id) {
     $this->machine = $machine;
+    $this->id = $id;
     $this->terms = array();
   }
 
@@ -20,7 +22,7 @@ class Production {
   }
 
   function addTerm() {
-    $term = new Term($this->machine);
+    $term = new Term();
     array_push($this->terms, $term);
 
     return $term;
@@ -31,11 +33,12 @@ class Production {
   }
 
   function getID() {
-
+    return $this->id;
   }
 
   function __toString() {
     return $this->getID(); // so productions can be used as factors without having to all $production->getID()
   }
+
 }
 ?>
