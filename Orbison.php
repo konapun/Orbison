@@ -13,6 +13,7 @@ include_once($exceptionBase . 'SyntaxException.php');
 include_once($exceptionBase . 'TransitionException.php');
 include_once($exceptionBase . 'TreeException.php');
 
+include_once($base . 'SourceContext.php');
 include_once($base . 'Token.php');
 include_once($base . 'Lexer.php');
 include_once($base . 'Parser.php');

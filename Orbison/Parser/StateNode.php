@@ -34,7 +34,7 @@ use Orbison\Exception\TransitionException as TransitionException;
     */
    function addTransition($edge, $node) {
      if (isset($this->transitions[$edge])) {
-       throw new TransitionException($node, $edge, "Transition already set");
+       throw new TransitionException($node, $edge, "Transition already set for (node, edge) ($node, $edge)");
      }
      $this->transitions[$edge] = $node;
    }

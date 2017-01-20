@@ -51,7 +51,24 @@ class ProductionMachine {
 
     print "(START) Adding transition from PDA_START on" . $this->startProduction . " to $startNode\n";
     $pda->addTransition(PDA::START, $this->startProduction, $startNode);
+
+    $this->pruneProductions();
     return $pda;
+  }
+
+  /*
+   * Productions are added as nodes to the PDA initially and then pruned, which
+   * forwards their edges to connecting nodes, thus eliminating the need to
+   * recursively traverse production rules to locate nonterminals
+   */
+  private function pruneProductions() {
+    $pda = $this->pda;
+
+    foreach ($this->productions as $productionName => $production) {
+      // TODO
+      // $pda->pruneNode($productionNode);
+      print "Pruning $productionName\n";
+    }
   }
 
   private function buildProduction($production) {

@@ -1,6 +1,7 @@
 <?php
 namespace Orbison;
 
+use Orbison\SourceContext as SourceContext;
 use Orbison\Exception\SyntaxException as SyntaxException;
 
 /*
@@ -20,6 +21,14 @@ abstract class Lexer {
    * starting at the beginning of the line since source will be trimmed.
    */
   abstract protected function tokens();
+
+  /*
+   * Define a custom error handling function. This can be used to further lex
+   * for tokens which aren't easily represented as regexes.
+   */
+  protected function handleException($sourceContext) {
+    throw new SyntaxException("Syntax Exception", $sourceContext->getSource(), $sourceContext->getLineNumber(), $sourceContext->getOffset(), $sourceContext->getFile());
+  }
 
   /*
    * Any further operations that should be performed on the tokens after they've
@@ -50,7 +59,7 @@ abstract class Lexer {
       $string = substr($source, $offset);
       $result = $this->match($string, $lineNumber, $offset);
       if ($result === false) {
-        throw new SyntaxException("Syntax Exception", $source, $lineNumber, $offset, $file);
+        $this->handleException(new SourceContext($source, $lineNumber, $offset, $file));
       }
 
       list($token, $match) = $result;

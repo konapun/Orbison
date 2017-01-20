@@ -40,7 +40,7 @@ class BNFParser extends Parser {
     $expression->addTerm()->addFactor(array( Token::PIPE, $term->getID() ));
 
     // <term> ::= <factor> ( <factor> );
-    $term->addTerm()->addFactor($factor->getID());
+    // $term->addTerm()->addFactor($factor->getID()); // FIXME
     $term->addTerm()->addFactor(array( $factor->getID(), $term->getID() ));
 
     /*
