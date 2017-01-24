@@ -29,6 +29,7 @@ include_once($parserBase . 'StateNode.php');
 
 include_once($parserBase . 'ProductionMachine.php');
 include_once($prodMachineBase . 'Symbol.php');
+include_once($prodMachineBase . 'Terminal.php');
 include_once($prodMachineBase . 'Nonterminal.php');
 include_once($prodMachineBase . 'Production.php');
 include_once($prodMachineBase . 'Term.php');

@@ -3,7 +3,7 @@ namespace Orbison\Parser\ProductionMachine;
 
 use Orbison\Parser\ProductionMachine\Symbol as Symbol;
 
-abstract class Nonterminal extends Symbol {
+abstract class Nonterminal implements Symbol {
 
   /*
    * Template method for setting the collection which this abstract class
@@ -22,20 +22,16 @@ abstract class Nonterminal extends Symbol {
       $firstFactor = $collection[0];
 
       if ($firstFactor->isTerminal()) {
-        print "$firstFactor is a terminal!\n";
+        print $firstFactor->getID() . " is a terminal!\n";
         array_push($firstTerminals, $firstFactor);
       }
       else { // first factor is a production; need to recursively find first terminal
-        print "$firstFactor is a nonterminal; recursing!\n";
+        print $firstFactor->getID() . " is a nonterminal; recursing!\n";
         $firstFactor->getFirstTerminals();
       }
     }
 
     return $firstTerminals;
-  }
-
-  function getLastTerminals() {
-
   }
 
   final function isTerminal() {

@@ -22,7 +22,7 @@ class Term extends Nonterminal {
     foreach ($factors as $factor) {
       $factorObj = $factor;
 
-      $factorID = (string) $factor;
+      $factorID = is_object($factor) ? $factor->getID() : $factor;
       if (!$production->isProduction($factorID)) {
         $factorObj = new Factor($factorID);
       }
