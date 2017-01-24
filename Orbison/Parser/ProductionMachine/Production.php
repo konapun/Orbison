@@ -1,19 +1,25 @@
 <?php
 namespace Orbison\Parser\ProductionMachine;
 
+use Orbison\Parser\Productionmachine\Nonterminal as Nonterminal;
 use Orbison\Parser\ProductionMachine\Term as Term;
 
 /*
  * Abstraction for a single production
  */
-class Production {
+class Production extends Nonterminal {
+  private $ID_PREFIX = '__PRODMACHINE__PROD__';
+  private $TERM_PREFIX = '__PRODMACHINE__TERM__';
+
+  private $termBase;
   private $machine;
   private $id;
   private $terms;
 
   function __construct($machine, $id) {
     $this->machine = $machine;
-    $this->id = $id;
+    $this->id = $this->ID_PREFIX . $id;
+    $this->termBase = $this->TERM_PREFIX . $id;
     $this->terms = array();
   }
 
@@ -22,7 +28,8 @@ class Production {
   }
 
   function addTerm() {
-    $term = new Term();
+    $termID = $this->termBase . count($this->terms);
+    $term = new Term($this, $termID);
     array_push($this->terms, $term);
 
     return $term;
@@ -36,9 +43,13 @@ class Production {
     return $this->id;
   }
 
-  function __toString() {
-    return $this->getID(); // so productions can be used as factors without having to all $production->getID()
+  function isProduction($id) {
+    $prefix = $this->ID_PREFIX;
+    return substr($id, 0, strlen($prefix)) === $prefix;
   }
 
+  protected function getCollection() {
+    return $this->getTerms();
+  }
 }
 ?>

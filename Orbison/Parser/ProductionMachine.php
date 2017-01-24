@@ -42,43 +42,29 @@ class ProductionMachine {
    */
   function exportPDA() {
     $pda = $this->pda;
-    $startNode = $this->getOrCreateNode($this->startProduction);
+    $firstTerminals = $this->productions[$this->startProduction]->getFirstTerminals();
 
-    $currentNode = $startNode;
+    foreach ($firstTerminals as $terminal) {
+      $startNode = $this->createNode($terminal);
+      print "Adding transition from START on $terminal to $startNode\n";
+      $pda->addTransition(PDA::START, $terminal, $startNode);
+    }
+
     foreach ($this->productions as $productionName => $production) {
       $this->buildProduction($production);
     }
 
-    print "(START) Adding transition from PDA_START on" . $this->startProduction . " to $startNode\n";
-    $pda->addTransition(PDA::START, $this->startProduction, $startNode);
-
-    $this->pruneProductions();
     return $pda;
-  }
-
-  /*
-   * Productions are added as nodes to the PDA initially and then pruned, which
-   * forwards their edges to connecting nodes, thus eliminating the need to
-   * recursively traverse production rules to locate nonterminals
-   */
-  private function pruneProductions() {
-    $pda = $this->pda;
-
-    foreach ($this->productions as $productionName => $production) {
-      // TODO
-      // $pda->pruneNode($productionNode);
-      print "Pruning $productionName\n";
-    }
   }
 
   private function buildProduction($production) {
     $pda = $this->pda;
-    $productionNode = $this->getOrCreateNode($production->getID());
+    $productionNode = $this->createNode($production->getID());
 
     foreach ($production->getTerms() as $term) { // terms are branches in a production
       $currentFactor = null;
       foreach ($term->getFactors() as $factor) {
-        $factorNode = $this->getOrCreateNode($factor);
+        $factorNode = $this->createNode($factor);
         if (!$currentFactor) {
           print "(BRANCH) Adding transition from $productionNode on $factor to $factorNode\n";
           $pda->addTransition($productionNode, $factor, $factorNode);
@@ -95,14 +81,22 @@ class ProductionMachine {
     return $productionNode;
   }
 
-  private function getOrCreateNode($productionID) {
-    if (array_key_exists($productionID, $this->pdaNodeMap)) {
-      return $this->pdaNodeMap[$productionID];
-    }
+  /*
+   * Return whether or not a node with id $id exists within the PDA
+   */
+  private function hasNode($id) {
+    return array_key_exists($id, $this->pdaNodeMap);
+  }
 
-    $pdaNode = $this->pda->createNode($productionID);
-    $this->pdaNodeMap[$productionID] = $pdaNode;
-    return $pdaNode;
+  /*
+   * Create a new node in the PDA and add it to the production machine's
+   * registry
+   */
+  private function createNode($id) {
+    $node = $this->pda->createNode($id);
+    $this->pdaNodeMap[$id] = $node;
+
+    return $node;
   }
 
 }

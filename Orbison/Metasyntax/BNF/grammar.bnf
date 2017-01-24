@@ -16,3 +16,12 @@
                | "<" [IDENTIFIER] ">"
                | "[" [TOKEN] "]"
              ;
+
+(*
+  DEV NOTES
+  ---------
+  - any repeated terminals are their own nodes
+  -- i.e. IDENTIFER from <production> is a different node than IDENTIFIER from <factor>
+  - build top-down and create placeholders for any undefined productions
+  - fill in placeholders once there's more info
+*)

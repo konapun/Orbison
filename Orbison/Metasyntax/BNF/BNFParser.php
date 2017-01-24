@@ -26,22 +26,21 @@ class BNFParser extends Parser {
     $expression = $productionMachine->createProduction('expression');
     $term = $productionMachine->createProduction('term');
     $factor = $productionMachine->createProduction('factor');
-    $epsilon = $productionMachine->createProduction('epsilon');
 
     // <grammar> ::= <production> ( <production> );
-    $grammar->addTerm()->addFactor(array( $production->getID(), $grammar->getID() ));
-    $grammar->addTerm()->addFactor($epsilon->getID());
+    $grammar->addTerm()->addFactor(array( $production, $grammar ));
+    // TODO - add transition to accept state
 
     // <production> ::= [IDENTIFIER] "::=" <expression> ";";
-    $production->addFactor(array( Token::IDENTIFIER, '::=', $expression->getID(), ';' ));
+    $production->addFactor(array( Token::IDENTIFIER, '::=', $expression, ';' ));
 
     // <expression> ::= <term> ( "|" <term> );
-    $expression->addTerm()->addFactor($term->getID());
-    $expression->addTerm()->addFactor(array( Token::PIPE, $term->getID() ));
+    $expression->addTerm()->addFactor($term);
+    $expression->addTerm()->addFactor(array( Token::PIPE, $term ));
 
     // <term> ::= <factor> ( <factor> );
-    // $term->addTerm()->addFactor($factor->getID()); // FIXME
-    $term->addTerm()->addFactor(array( $factor->getID(), $term->getID() ));
+    // $term->addTerm()->addFactor($factor); // FIXME
+    $term->addTerm()->addFactor(array( $factor, $term ));
 
     /*
      * <factor>     ::= '"' [STRING] '"'
