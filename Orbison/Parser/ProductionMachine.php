@@ -80,34 +80,6 @@ class ProductionMachine {
     }
   }
 
-  private function buildProduction($production) {
-    $pda = $this->pda;
-    $productionFirstTerminals = $production->getFirstTerminals();
-    var_dump($productionFirstTerminals);
-    $productionNode = $this->createNode($production->getID());
-
-    foreach ($production->getTerms() as $term) { // terms are branches in a production
-      $currentFactor = null;
-      foreach ($term->getFactors() as $factor) {
-        $factorID = $factor->getID();
-
-        $factorNode = $this->createNode($factorID);
-        if (!$currentFactor) {
-          print "(BRANCH) Adding transition from $productionNode on $factorID to $factorNode\n";
-          $pda->addTransition($productionNode, $factorID, $factorNode);
-        }
-        else {
-          print "(FACTOR) Adding transition from $currentFactor on $factorID to $factorNode\n";
-          $pda->addTransition($currentFactor, $factorID, $factorNode);
-        }
-
-        $currentFactor = $factorNode;
-      }
-    }
-
-    return $productionNode;
-  }
-
   /*
    * Return whether or not a node with id $id exists within the PDA
    */
