@@ -42,36 +42,63 @@ class ProductionMachine {
    */
   function exportPDA() {
     $pda = $this->pda;
-    $firstTerminals = $this->productions[$this->startProduction]->getFirstTerminals();
+    $startProduction = $this->productions[$this->startProduction];
+    $firstTerminals = $startProduction->getFirstTerminals();
 
     foreach ($firstTerminals as $terminal) {
-      $startNode = $this->createNode($terminal);
-      print "Adding transition from START on $terminal to $startNode\n";
-      $pda->addTransition(PDA::START, $terminal, $startNode);
+      $terminalID = $terminal->getID();
+
+      $startNode = $this->createNode($terminalID);
+      $pda->addTransition(PDA::START, $terminalID, $startNode);
     }
 
-    foreach ($this->productions as $productionName => $production) {
-      $this->buildProduction($production);
-    }
-
+    $this->walkProduction($startProduction, array());
     return $pda;
+  }
+
+  /*
+   * Walks down a production, building a network
+   */
+  private function walkProduction($production, $seen) {
+    $pda = $this->pda;
+
+    print "-PRODUCTION " . $production->getID() . "\n";
+    $seen[$production->getID()] = true;
+    foreach ($production->getTerms() as $term) { // terms are branches in a production
+      print "-- BRANCH\n";
+      foreach ($term->getFactors() as $factor) {
+
+        if ($production->isProduction($factor->getID())) {
+          if (!array_key_exists($factor->getID(), $seen)) {
+            $this->walkProduction($factor, $seen);
+          }
+        }
+        else {
+          print "--- FACTOR " . $factor->getID() . "\n";
+        }
+      }
+    }
   }
 
   private function buildProduction($production) {
     $pda = $this->pda;
+    $productionFirstTerminals = $production->getFirstTerminals();
+    var_dump($productionFirstTerminals);
     $productionNode = $this->createNode($production->getID());
 
     foreach ($production->getTerms() as $term) { // terms are branches in a production
       $currentFactor = null;
       foreach ($term->getFactors() as $factor) {
-        $factorNode = $this->createNode($factor);
+        $factorID = $factor->getID();
+
+        $factorNode = $this->createNode($factorID);
         if (!$currentFactor) {
-          print "(BRANCH) Adding transition from $productionNode on $factor to $factorNode\n";
-          $pda->addTransition($productionNode, $factor, $factorNode);
+          print "(BRANCH) Adding transition from $productionNode on $factorID to $factorNode\n";
+          $pda->addTransition($productionNode, $factorID, $factorNode);
         }
         else {
-          print "(FACTOR) Adding transition from $currentFactor on $factor to $factorNode\n";
-          $pda->addTransition($currentFactor, $factor, $factorNode);
+          print "(FACTOR) Adding transition from $currentFactor on $factorID to $factorNode\n";
+          $pda->addTransition($currentFactor, $factorID, $factorNode);
         }
 
         $currentFactor = $factorNode;

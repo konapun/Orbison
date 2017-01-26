@@ -8,11 +8,13 @@ class Term extends Nonterminal {
   private $production;
   private $id;
   private $factors;
+  private $matchCallback; // TODO - these will register with the production machine since the production machine will be responsible for finding matches
 
   function __construct($production, $id) {
     $this->production = $production;
     $this->id = $id;
     $this->factors = array();
+    $this->matchCallback = null;
   }
 
   function addFactor($factors) {
@@ -31,6 +33,14 @@ class Term extends Nonterminal {
     }
 
     return $this;
+  }
+
+  /*
+   * Define a function to run when this term is matched. The callback will be
+   * used to execute code or build an AST.
+   */
+  function onMatch($fn) {
+    $this->matchCallback = $fn;
   }
 
   function getFactors() {
