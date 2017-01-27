@@ -51,9 +51,16 @@ class Term extends Nonterminal {
     return $this->id;
   }
 
-  protected function getCollection() {
-    return $this->getFactors();
-  }
+  function getFirstTerminals() {
+    $factors = $this->getFactors();
 
+    $firstTerminals = array();
+    if (count($factors) > 0) {
+      $firstFactor = $factors[0];
+      $firstTerminals = array_merge($firstTerminals, $firstFactor->getFirstTerminals());
+    }
+
+    return $firstTerminals;
+  }
 }
 ?>

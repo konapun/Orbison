@@ -52,18 +52,23 @@ class ProductionMachine {
       $pda->addTransition(PDA::START, $terminalID, $startNode);
     }
 
-    $this->walkProduction($startProduction, array());
+    $this->walkProduction($startProduction);
     return $pda;
   }
 
   /*
    * Walks down a production, building a network
    */
-  private function walkProduction($production, $seen) {
+  private function walkProduction($production, $seen=array()) {
     $pda = $this->pda;
 
     print "-PRODUCTION " . $production->getID() . "\n";
     $seen[$production->getID()] = true;
+    $currentNodes = $production->getFirstTerminals();
+    print "\tHave first terminals:\n";
+    foreach ($currentNodes as $currentNode) {
+      print "\t\t" . $currentNode->getID() . "\n";
+    }
     foreach ($production->getTerms() as $term) { // terms are branches in a production
       print "-- BRANCH\n";
       foreach ($term->getFactors() as $factor) {

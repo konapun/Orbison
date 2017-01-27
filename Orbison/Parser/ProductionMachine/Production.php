@@ -48,8 +48,14 @@ class Production extends Nonterminal {
     return substr($id, 0, strlen($prefix)) === $prefix;
   }
 
-  protected function getCollection() {
-    return $this->getTerms();
+  function getFirstTerminals() {
+    $firstTerminals = array();
+    foreach ($this->getTerms() as $term) {
+      $firstTerminals = array_merge($firstTerminals, $term->getFirstTerminals());
+    }
+
+    return $firstTerminals;
   }
+
 }
 ?>

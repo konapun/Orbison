@@ -35,6 +35,6 @@ include_once($prodMachineBase . 'Production.php');
 include_once($prodMachineBase . 'Term.php');
 include_once($prodMachineBase . 'Factor.php');
 
-include_once($metaBase . 'Factory.php');
+include_once($metaBase . 'Bundle.php');
 include_once($bnfBase . 'BNF.php');
 ?>

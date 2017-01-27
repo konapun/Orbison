@@ -50,6 +50,7 @@ class BNFParser extends Parser {
      *                | "(" <expression> ")"
      *              ;
      */
+print "SHOULD HAVE MANY: " . $factor->getID() . "\n";
     $factor->addFactor(Token::STRING);
     $factor->addFactor(Token::IDENTIFIER);
     $factor->addFactor(Token::TOKEN);
