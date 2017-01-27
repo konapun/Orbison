@@ -65,7 +65,6 @@ class ProductionMachine {
     $seen[$production->getID()] = true;
     $currentTerminals = $production->getFirstTerminals();
     foreach ($production->getTerms() as $term) { // terms are branches in a production
-      print "-- BRANCH\n";
       foreach ($term->getFactors() as $factor) {
         if ($production->isProduction($factor->getID())) {
           if (!array_key_exists($factor->getID(), $seen)) {
@@ -74,7 +73,7 @@ class ProductionMachine {
         }
         else {
           $factorID = $factor->getID();
-          foreach ($currentTerminals as $currentTerminal) {
+          foreach ($currentTerminals as $currentTerminal) { // FIXME - this isn't right
             print "Adding transition from " . $currentTerminal->getID() . " to $factorID\n";
           }
         }
