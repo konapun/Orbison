@@ -52,13 +52,16 @@ class ProductionMachine {
       // $pda->addTransition(PDA::START, $terminalID, $startNode);
     // }
 
-    $acceptNode = $this->walkProduction($startProduction, PDA::START);
-    print "Adding transition from $acceptNode to ACCEPT STATE\n";
-    $pda->addTransition($acceptNode, PDA::ACCEPT, PDA::ACCEPT);
+    $acceptNodes = $this->walkProduction($startProduction, array(PDA::START));
+    foreach ($acceptNodes as $acceptNode) {
+      print "Adding transition from $acceptNode to ACCEPT STATE\n";
+      $pda->addTransition($acceptNode, PDA::ACCEPT, PDA::ACCEPT);
+    }
+
     return $pda;
   }
 
-  private function walkProduction($production, $incomingNode) {
+  private function walkProduction($production, $incomingNodes) {
     $pda = $this->pda;
 
     $outgoingNodes = array();
@@ -68,32 +71,44 @@ class ProductionMachine {
       $prevNode = null;
       foreach ($term->getFactors() as $factor) { // series
         if (!$factor->isTerminal()) {
-          $prevNode = $this->walkProduction($factor, $prevNode);
-          print "!Got outgoing node $prevNode for production " . $factor->getID() . "\n";
+          print "++Walking production " . $factor->getID() . " with incoming\n";
+          foreach (array( $prevNode ) as $incomingNode) {
+            print "  $incomingNode\n";
+          }
+          $incomingNodes = $this->walkProduction($factor, array( $prevNode ));
+          print "Got incoming nodes from " . $factor->getID() . " on production " . $production->getID() . " with prev node $prevNode:\n";
+          foreach ($incomingNodes as $incomingNode) {
+            print "  $incomingNode\n";
+          }
         }
         else {
           $factorID = $factor->getID();
           $currentNode = $pda->createNode($factorID);
 
-          if (is_null($prevNode)) {
-            print "Adding transition from $incomingNode on $factorID to $currentNode\n";
-            $pda->addTransition($incomingNode, $factorID, $currentNode);
+          if ($incomingNodes) {
+            foreach ($incomingNodes as $incomingNode) {
+              print "(CARRY) Adding transition from $incomingNode on $factorID to $currentNode\n";
+              $pda->addTransition($incomingNode, $factorID, $currentNode);
+            }
+            $incomingNodes = array();
           }
           else {
-            print "Adding transition from $prevNode on $factorID to $currentNode\n";
+            print "(NORML) Adding transition from $prevNode on $factorID to $currentNode\n";
             $pda->addTransition($prevNode, $factorID, $currentNode);
           }
 
-          print "!Setting prevNode to $currentNode\n";
           $prevNode = $currentNode;
         }
       }
 
       array_push($outgoingNodes, $prevNode);
-      print "Carrying over: $prevNode\n";
     }
 
-    return $prevNode;
+    print "Outgoing:\n";
+    foreach ($outgoingNodes as $outgoingNode) {
+      print "  $outgoingNode\n";
+    }
+    return $outgoingNodes;
   }
 
   /*
