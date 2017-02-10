@@ -21,8 +21,8 @@ class SourceContext {
     return $this->source;
   }
 
-  function getLine() {
-    return $this->line;
+  function getLineNumber() {
+    return $this->lineNumber;
   }
 
   function getOffset() {

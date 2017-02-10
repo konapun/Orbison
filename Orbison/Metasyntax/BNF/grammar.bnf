@@ -9,8 +9,10 @@
 <production> ::= [IDENTIFIER] "::=" <expression> ";";
 <expression> ::= <term>
                | <term> "|" <term>;
-<term>       ::= <factor>
-               | <factor> <term>;
+<term>       ::= <definition>
+               | "epsilon";
+<definition> ::= <factor>
+               | <factor> <definition>
 <factor>     ::= '"' [STRING] '"'
                | "'" [STRING] "'"
                | "<" [IDENTIFIER] ">"

@@ -1,12 +1,15 @@
 <?php
 include_once('Orbison.php');
 
-use Orbison\Metasyntax\BNF\BNFLexer as BNFLexer;
-use Orbison\Metasyntax\BNF\BNFParser as BNFParser;
+$testBase = $base = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+include_once($testBase . 'PMTest' . DIRECTORY_SEPARATOR . 'PMTest.php');
 
-$file = dirname(__FILE__) . '/examples/bflo.bflo';
-$lexer = new BNFLexer();
-$parser = new BNFParser();
+use Orbison\Metasyntax\PMTest\PMTest as Bundle;
+
+$file = dirname(__FILE__) . '/examples/simple.bnf';
+$bundle = new Bundle();
+$lexer = $bundle->getLexer();
+$parser = $bundle->getParser();
 
 $tokens = array();
 try {

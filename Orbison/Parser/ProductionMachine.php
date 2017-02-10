@@ -43,42 +43,57 @@ class ProductionMachine {
   function exportPDA() {
     $pda = $this->pda;
     $startProduction = $this->productions[$this->startProduction];
-    $firstTerminals = $startProduction->getFirstTerminals();
+    // $firstTerminals = $startProduction->getFirstTerminals();
 
-    foreach ($firstTerminals as $terminal) {
-      $terminalID = $terminal->getID();
+    // foreach ($firstTerminals as $terminal) {
+      // $terminalID = $terminal->getID();
 
-      $startNode = $this->createNode($terminalID);
-      $pda->addTransition(PDA::START, $terminalID, $startNode);
-    }
+      // $startNode = $this->createNode($terminalID);
+      // $pda->addTransition(PDA::START, $terminalID, $startNode);
+    // }
 
-    $this->walkProduction($startProduction);
+    $acceptNode = $this->walkProduction($startProduction, PDA::START);
+    print "Adding transition from $acceptNode to ACCEPT STATE\n";
+    $pda->addTransition($acceptNode, PDA::ACCEPT, PDA::ACCEPT);
     return $pda;
   }
 
-  /*
-   * Walks down a production, building a network
-   */
-  private function walkProduction($production, $seen=array()) {
+  private function walkProduction($production, $incomingNode) {
     $pda = $this->pda;
 
-    $seen[$production->getID()] = true;
-    $currentTerminals = $production->getFirstTerminals();
-    foreach ($production->getTerms() as $term) { // terms are branches in a production
-      foreach ($term->getFactors() as $factor) {
-        if ($production->isProduction($factor->getID())) {
-          if (!array_key_exists($factor->getID(), $seen)) {
-            $this->walkProduction($factor, $seen);
-          }
+    $outgoingNodes = array();
+    foreach ($production->getTerms() as $term) { // parallel
+
+      $currentNode = null;
+      $prevNode = null;
+      foreach ($term->getFactors() as $factor) { // series
+        if (!$factor->isTerminal()) {
+          $prevNode = $this->walkProduction($factor, $prevNode);
+          print "!Got outgoing node $prevNode for production " . $factor->getID() . "\n";
         }
         else {
           $factorID = $factor->getID();
-          foreach ($currentTerminals as $currentTerminal) { // FIXME - this isn't right
-            print "Adding transition from " . $currentTerminal->getID() . " to $factorID\n";
+          $currentNode = $pda->createNode($factorID);
+
+          if (is_null($prevNode)) {
+            print "Adding transition from $incomingNode on $factorID to $currentNode\n";
+            $pda->addTransition($incomingNode, $factorID, $currentNode);
           }
+          else {
+            print "Adding transition from $prevNode on $factorID to $currentNode\n";
+            $pda->addTransition($prevNode, $factorID, $currentNode);
+          }
+
+          print "!Setting prevNode to $currentNode\n";
+          $prevNode = $currentNode;
         }
       }
+
+      array_push($outgoingNodes, $prevNode);
+      print "Carrying over: $prevNode\n";
     }
+
+    return $prevNode;
   }
 
   /*

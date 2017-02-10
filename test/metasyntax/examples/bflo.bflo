@@ -1,17 +1,29 @@
 (*
   Orbison BNF is a dialect containing symbols with the following meanings:
-    ( ... )     Allow the enclosed terms 0 or more times
     [ ... ]     Reference a token produced by the lexer
 
   Below is Orbison BNF grammar defined in itself
 *)
-<grammar>    ::= ( <production> );
+<grammar>    ::= <production> <grammar>
+               | epsilon;
 <production> ::= [IDENTIFIER] "::=" <expression> ";";
-<expression> ::= <term>  ( "|" <term> );
-<term>       ::= <factor> ( <factor> );
+<expression> ::= <term>
+               | <term> "|" <term>;
+<term>       ::= <definition>
+               | "epsilon";
+<definition> ::= <factor>
+               | <factor> <definition>
 <factor>     ::= '"' [STRING] '"'
                | "'" [STRING] "'"
                | "<" [IDENTIFIER] ">"
                | "[" [TOKEN] "]"
-               | "(" <expression> ")"
              ;
+
+(*
+  DEV NOTES
+  ---------
+  - any repeated terminals are their own nodes
+  -- i.e. IDENTIFER from <production> is a different node than IDENTIFIER from <factor>
+  - build top-down and create placeholders for any undefined productions
+  - fill in placeholders once there's more info
+*)

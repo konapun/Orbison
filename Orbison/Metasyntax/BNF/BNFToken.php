@@ -11,6 +11,7 @@ class BNFToken extends Token {
   const SEMICOLON = 'T_SEMICOLON';
   const TOKEN = 'T_TOKEN';
   const ACTION = 'T_ACTION';
+  const EPSILON = 'T_EPSILON';
   const BEGIN_REPEAT = 'T_BEGIN_REPEAT';
   const END_REPEAT = 'T_END_REPEAT';
 }
