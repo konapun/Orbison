@@ -11,8 +11,11 @@ class PMTestLexer extends Lexer {
       '/^"([^"]*)"/' => Token::STRING, // "string"
       '/^(hello)/'   => Token::HELLO, // hello
       '/^(world)/'   => Token::WORLD, // world
+      '/^(done)/'    => Token::DONE, // done
       '/^(,)/'       => Token::COMMA, // ,
       '/^(!)/'       => Token::EXCLAMATION, // !
+      '/^(\.)/'      => Token::PERIOD, // .
+      '/^(\?)/'      => Token::QUESTION, // ?
       '/^(\s+)/'     => Lexer::SKIP // whitespace
     );
   }

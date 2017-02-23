@@ -14,7 +14,7 @@ class Term extends Nonterminal {
     $this->production = $production;
     $this->id = $id;
     $this->factors = array();
-    $this->matchCallback = null;
+    $this->matchCallback = function() {};
   }
 
   function addFactor($factors) {
@@ -41,6 +41,11 @@ class Term extends Nonterminal {
    */
   function onMatch($fn) {
     $this->matchCallback = $fn;
+  }
+
+  function triggerMatch($matches) {
+    $callback = $this->matchCallback;
+    $callback($matches);
   }
 
   function getFactors() {

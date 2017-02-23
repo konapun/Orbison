@@ -11,13 +11,13 @@ class ProductionMachine {
   private $pda;
   private $startProduction;
   private $productions;
-  private $pdaNodeMap;
+  private $seen;
 
   function __construct() {
     $this->pda = new PDA();
     $this->startProduction = null;
     $this->productions = array();
-    $this->pdaNodeMap = array();
+    $this->seen = array();
   }
 
   /*
@@ -43,90 +43,75 @@ class ProductionMachine {
   function exportPDA() {
     $pda = $this->pda;
     $startProduction = $this->productions[$this->startProduction];
-    // $firstTerminals = $startProduction->getFirstTerminals();
-
-    // foreach ($firstTerminals as $terminal) {
-      // $terminalID = $terminal->getID();
-
-      // $startNode = $this->createNode($terminalID);
-      // $pda->addTransition(PDA::START, $terminalID, $startNode);
-    // }
 
     $acceptNodes = $this->walkProduction($startProduction, array(PDA::START));
     foreach ($acceptNodes as $acceptNode) {
-      print "Adding transition from $acceptNode to ACCEPT STATE\n";
+      print "Transitioning from $acceptNode on ACCEPT TO ACCEPT\n";
       $pda->addTransition($acceptNode, PDA::ACCEPT, PDA::ACCEPT);
     }
 
     return $pda;
   }
 
-  private function walkProduction($production, $incomingNodes) {
+  private function walkProduction($production, $incoming) {
+    // Allow for recursive productions by only creating nodes and adding transitions the first time a production is encountered
+    if (array_key_exists($production->getID(), $this->seen)) {
+      print "Returning from SEEN production " . $production->getID() . " with outgoing " . $this->PRINT_ARRAY($this->seen[$production->getID()]) . "\n";
+      return $this->seen[$production->getID()]; // FIXME still need to add transitions to
+    }
+    $this->seen[$production->getID()] = array();
+
     $pda = $this->pda;
 
-    $outgoingNodes = array();
-    foreach ($production->getTerms() as $term) { // parallel
-
+    $carry = array(); // nodes which are carried to the next production
+    $outgoing = array();
+    foreach ($production->getTerms() as $term) {
       $currentNode = null;
-      $prevNode = null;
-      foreach ($term->getFactors() as $factor) { // series
+
+      $matches = array(); // matches used for callback
+      $incomingNodes = $incoming;
+      foreach ($term->getFactors() as $factor) {
         if (!$factor->isTerminal()) {
-          print "++Walking production " . $factor->getID() . " with incoming\n";
-          foreach (array( $prevNode ) as $incomingNode) {
-            print "  $incomingNode\n";
-          }
-          $incomingNodes = $this->walkProduction($factor, array( $prevNode ));
-          print "Got incoming nodes from " . $factor->getID() . " on production " . $production->getID() . " with prev node $prevNode:\n";
-          foreach ($incomingNodes as $incomingNode) {
-            print "  $incomingNode\n";
-          }
+          $transferNodes = $incomingNodes ? $incomingNodes : array($currentNode);
+          $incomingNodes = $this->walkProduction($factor, $transferNodes);
+          $carry = $incomingNodes;
+          array_push($matches, $carry);
         }
         else {
           $factorID = $factor->getID();
-          $currentNode = $pda->createNode($factorID);
+          $factorNode = $pda->createNode($factorID);
 
-          if ($incomingNodes) {
-            foreach ($incomingNodes as $incomingNode) {
-              print "(CARRY) Adding transition from $incomingNode on $factorID to $currentNode\n";
-              $pda->addTransition($incomingNode, $factorID, $currentNode);
-            }
-            $incomingNodes = array();
+          while ($node = array_pop($incomingNodes)) {
+            print "Adding transition from $node on $factorID to $factorNode\n";
+            $pda->addTransition($node, $factorID, $factorNode);
           }
-          else {
-            print "(NORML) Adding transition from $prevNode on $factorID to $currentNode\n";
-            $pda->addTransition($prevNode, $factorID, $currentNode);
+          if ($currentNode) {
+            print "Adding transition from $currentNode on $factorID to $factorNode\n";
+            $pda->addTransition($currentNode, $factorID, $factorNode);
           }
 
-          $prevNode = $currentNode;
+          array_push($matches, $factorNode);
+          $currentNode = $factorNode;
         }
       }
+      if ($currentNode) {
+        array_push($outgoing, $currentNode);
+      }
 
-      array_push($outgoingNodes, $prevNode);
+      $term->triggerMatch($matches);
     }
 
-    print "Outgoing:\n";
-    foreach ($outgoingNodes as $outgoingNode) {
-      print "  $outgoingNode\n";
+    if ($carry) {
+      print "Overwriting " . $this->PRINT_ARRAY($outgoing) . " with " . $this->PRINT_ARRAY($carry) . "\n";
+      $outgoing = $carry;
     }
-    return $outgoingNodes;
+
+    $this->seen[$production->getID()] = $outgoing;
+    return $outgoing;
   }
 
-  /*
-   * Return whether or not a node with id $id exists within the PDA
-   */
-  private function hasNode($id) {
-    return array_key_exists($id, $this->pdaNodeMap);
-  }
-
-  /*
-   * Create a new node in the PDA and add it to the production machine's
-   * registry
-   */
-  private function createNode($id) {
-    $node = $this->pda->createNode($id);
-    $this->pdaNodeMap[$id] = $node;
-
-    return $node;
+  private function PRINT_ARRAY($array) {
+    return array_reduce($array, function($a, $b) { return "$a $b"; }, "");
   }
 
 }
