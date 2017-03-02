@@ -98,7 +98,6 @@ class ProductionMachine {
         array_push($outgoing, $currentNode);
       }
 
-      $term->triggerMatch($matches);
     }
 
     if ($carry) {
