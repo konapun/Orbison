@@ -34,6 +34,7 @@ include_once($prodMachineBase . 'Nonterminal.php');
 include_once($prodMachineBase . 'Production.php');
 include_once($prodMachineBase . 'Term.php');
 include_once($prodMachineBase . 'Factor.php');
+include_once($prodMachineBase . 'Linker.php');
 
 include_once($metaBase . 'Bundle.php');
 include_once($bnfBase . 'BNF.php');

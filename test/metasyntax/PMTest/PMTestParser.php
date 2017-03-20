@@ -11,7 +11,7 @@ class PMTestParser extends Parser {
    * <phrase> ::= "hello" "," <target> <punctuation> <phrase>
    *            | "done" "!";
    * <target> ::= "world"
-   *           | [STRING];
+   *            | [STRING];
    * <punctuation> ::= "!"
    *                 | "."
    *                 | "?";
